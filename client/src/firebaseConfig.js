@@ -280,7 +280,10 @@ export const generateDriverId = async () => {
  */
 export const getDevices = async () => {
   try {
-    const q = query(collection(db, 'devices'), orderBy('name'));
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+    
+    const q = query(collection(db, 'devices'), orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
     const devices = [];
     querySnapshot.forEach((doc) => {
@@ -288,7 +291,8 @@ export const getDevices = async () => {
     });
     return { success: true, devices };
   } catch (error) {
-    return { success: false, error: error.message };
+    console.error('Error fetching devices:', error);
+    return { success: false, error: error.message, devices: [] };
   }
 };
 
@@ -298,13 +302,28 @@ export const getDevices = async () => {
  */
 export const addDevice = async (deviceData) => {
   try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+    
     const docRef = await addDoc(collection(db, 'devices'), {
       ...deviceData,
+      userId: user.uid,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      status: deviceData.status || 'active'
+    });
+    
+    const newDevice = { 
+      id: docRef.id, 
+      ...deviceData,
+      userId: user.uid,
       createdAt: Date.now(),
       updatedAt: Date.now()
-    });
-    return { success: true, device: { id: docRef.id, ...deviceData } };
+    };
+    
+    return { success: true, device: newDevice };
   } catch (error) {
+    console.error('Error adding device:', error);
     return { success: false, error: error.message };
   }
 };
@@ -570,3 +589,264 @@ export const clearAllData = async () => {
 
 // Export Firebase instances for direct use if needed
 export { auth, db, rtdb };
+
+// ==========================================
+// 📊 ANALYTICS & STATISTICS FUNCTIONS
+// ==========================================
+
+/**
+ * Get device statistics
+ * @param {string} deviceId - Optional device ID to filter
+ * @param {number} days - Number of days to analyze
+ */
+export const getDeviceStatistics = async (deviceId = null, days = 7) => {
+  try {
+    const cutoffTime = Date.now() - (days * 24 * 60 * 60 * 1000);
+    let q;
+    
+    if (deviceId) {
+      q = query(
+        collection(db, 'logs'),
+        where('deviceId', '==', deviceId),
+        where('timestamp', '>=', cutoffTime),
+        orderBy('timestamp', 'desc')
+      );
+    } else {
+      q = query(
+        collection(db, 'logs'),
+        where('timestamp', '>=', cutoffTime),
+        orderBy('timestamp', 'desc')
+      );
+    }
+    
+    const querySnapshot = await getDocs(q);
+    const logs = [];
+    querySnapshot.forEach((doc) => {
+      logs.push({ id: doc.id, ...doc.data() });
+    });
+    
+    // Calculate statistics
+    const stats = {
+      totalReadings: logs.length,
+      averageBAC: 0,
+      maxBAC: 0,
+      alertCount: 0,
+      safeReadings: 0,
+      warningReadings: 0,
+      criticalReadings: 0
+    };
+    
+    logs.forEach(log => {
+      const bac = log.alcoholLevel || 0;
+      stats.averageBAC += bac;
+      stats.maxBAC = Math.max(stats.maxBAC, bac);
+      
+      if (bac > 0.3) {
+        stats.criticalReadings++;
+        stats.alertCount++;
+      } else if (bac > 0.15) {
+        stats.warningReadings++;
+      } else {
+        stats.safeReadings++;
+      }
+    });
+    
+    if (logs.length > 0) {
+      stats.averageBAC = stats.averageBAC / logs.length;
+    }
+    
+    return { success: true, stats, logs };
+  } catch (error) {
+    console.error('Error getting statistics:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Create security log entry
+ * @param {Object} logData - Log data
+ */
+export const createSecurityLog = async (logData) => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+    
+    const docRef = await addDoc(collection(db, 'security_logs'), {
+      ...logData,
+      userId: user.uid,
+      userEmail: user.email,
+      timestamp: Date.now()
+    });
+    
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error('Error creating security log:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Get device by ID
+ * @param {string} deviceId - Device ID
+ */
+export const getDeviceById = async (deviceId) => {
+  try {
+    const deviceRef = doc(db, 'devices', deviceId);
+    const deviceSnap = await getDoc(deviceRef);
+    
+    if (deviceSnap.exists()) {
+      return { success: true, device: { id: deviceSnap.id, ...deviceSnap.data() } };
+    } else {
+      return { success: false, error: 'Device not found' };
+    }
+  } catch (error) {
+    console.error('Error getting device:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Get logs for specific device
+ * @param {string} deviceId - Device ID
+ * @param {number} limitCount - Number of logs to retrieve
+ */
+export const getDeviceLogsById = async (deviceId, limitCount = 50) => {
+  try {
+    const q = query(
+      collection(db, 'logs'),
+      where('deviceId', '==', deviceId),
+      orderBy('timestamp', 'desc'),
+      limit(limitCount)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const logs = [];
+    querySnapshot.forEach((doc) => {
+      logs.push({ id: doc.id, ...doc.data() });
+    });
+    
+    return { success: true, logs };
+  } catch (error) {
+    console.error('Error getting device logs:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Update alert status
+ * @param {string} alertId - Alert ID
+ * @param {string} status - New status (new, acknowledged, resolved)
+ */
+export const updateAlertStatus = async (alertId, status) => {
+  try {
+    const alertRef = doc(db, 'alerts', alertId);
+    await updateDoc(alertRef, {
+      status: status,
+      updatedAt: Date.now()
+    });
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating alert:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Batch create logs (for testing or bulk import)
+ * @param {Array} logsData - Array of log objects
+ */
+export const batchCreateLogs = async (logsData) => {
+  try {
+    const promises = logsData.map(logData => 
+      addDoc(collection(db, 'logs'), {
+        ...logData,
+        timestamp: logData.timestamp || Date.now()
+      })
+    );
+    
+    await Promise.all(promises);
+    return { success: true, count: logsData.length };
+  } catch (error) {
+    console.error('Error batch creating logs:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Get user profile
+ * @param {string} userId - Optional user ID (defaults to current user)
+ */
+export const getUserProfile = async (userId = null) => {
+  try {
+    const user = getCurrentUser();
+    const targetUserId = userId || user?.uid;
+    
+    if (!targetUserId) return { success: false, error: 'No user ID provided' };
+    
+    const profileRef = doc(db, 'user_profiles', targetUserId);
+    const profileSnap = await getDoc(profileRef);
+    
+    if (profileSnap.exists()) {
+      return { success: true, profile: profileSnap.data() };
+    } else {
+      return { success: true, profile: null };
+    }
+  } catch (error) {
+    console.error('Error getting user profile:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Save user preferences
+ * @param {Object} preferences - User preferences
+ */
+export const saveUserPreferences = async (preferences) => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+    
+    const prefsRef = doc(db, 'user_settings', user.uid);
+    await setDoc(prefsRef, {
+      preferences: preferences,
+      updatedAt: Date.now()
+    }, { merge: true });
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving preferences:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Get user preferences
+ */
+export const getUserPreferences = async () => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+    
+    const prefsRef = doc(db, 'user_settings', user.uid);
+    const prefsSnap = await getDoc(prefsRef);
+    
+    if (prefsSnap.exists() && prefsSnap.data().preferences) {
+      return { success: true, preferences: prefsSnap.data().preferences };
+    } else {
+      // Return default preferences
+      return {
+        success: true,
+        preferences: {
+          theme: 'dark',
+          language: 'en',
+          notifications: true,
+          autoRefresh: true
+        }
+      };
+    }
+  } catch (error) {
+    console.error('Error getting preferences:', error);
+    return { success: false, error: error.message };
+  }
+};

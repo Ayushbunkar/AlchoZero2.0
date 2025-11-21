@@ -19,17 +19,19 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
     
-    // Device logs - allow read for authenticated users, write only via Cloud Functions
+    // Device logs - allow read and write for authenticated users
     match /logs/{logId} {
       allow read: if isAuthenticated();
-      allow write: if false; // Only Cloud Functions can write
+      allow create: if isAuthenticated(); // Allow authenticated users to create logs
+      allow update, delete: if isAdmin(); // Only admins can modify/delete
     }
     
-    // Alerts - allow read for authenticated users, write only via Cloud Functions
+    // Alerts - allow read and write for authenticated users
     match /alerts/{alertId} {
       allow read: if isAuthenticated();
-      allow write: if false; // Only Cloud Functions can write
+      allow create: if isAuthenticated(); // Allow authenticated users to create alerts
       allow update: if isAdmin(); // Admins can mark alerts as resolved
+      allow delete: if isAdmin();
     }
     
     // Engine logs - read for authenticated users
