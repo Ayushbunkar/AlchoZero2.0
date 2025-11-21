@@ -16,6 +16,7 @@ import Monitor from './Monitor';
 import Alerts from './Alerts';
 import Analytics from './Analytics';
 import Devices from './Devices';
+import DriverProfile from './DriverProfile';
 import Security from './Security';
 import Settings from './Settings';
 
@@ -549,6 +550,7 @@ const Dashboard = () => {
           <Route path="alerts" element={<Alerts />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="devices" element={<Devices />} />
+          <Route path="driver/:deviceId" element={<DriverProfile />} />
           <Route path="security" element={<Security />} />
           <Route path="settings" element={<Settings />} />
         </Routes>

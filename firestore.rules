@@ -50,6 +50,33 @@ service cloud.firestore {
       allow write: if isAuthenticated() && request.auth.uid == userId;
     }
     
+    // Devices - authenticated users can manage their devices
+    match /devices/{deviceId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated();
+    }
+    
+    // Counters - for generating unique IDs
+    match /counters/{counterId} {
+      allow read, write: if isAuthenticated();
+    }
+    
+    // User profiles for additional data
+    match /user_profiles/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // User settings
+    match /user_settings/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Security logs
+    match /security_logs/{logId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+    }
+    
     // Default deny all other documents
     match /{document=**} {
       allow read, write: if false;

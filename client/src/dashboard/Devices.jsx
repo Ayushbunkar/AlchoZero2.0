@@ -15,7 +15,9 @@ import {
   Edit,
   RefreshCw,
   Upload,
-  XCircle
+  XCircle,
+  Eye,
+  User
 } from 'lucide-react';
 import {
   onAuthStateChange,
@@ -352,25 +354,49 @@ const Devices = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * index }}
-              className="glass-card p-6 hover:bg-white/10 transition-colors"
+              className="glass-card p-6 hover:bg-white/10 transition-colors cursor-pointer group"
+              onClick={() => navigate(`/dashboard/driver/${device.id}`)}
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  {getStatusIcon(device.status, device.status === 'active')}
+                  <div className="relative">
+                    {device.driverPhoto ? (
+                      <img
+                        src={device.driverPhoto}
+                        alt={device.driverName || 'Driver'}
+                        className="w-12 h-12 rounded-full object-cover border-2 border-cyan-500/30"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                        <User className="w-6 h-6 text-white" />
+                      </div>
+                    )}
+                    <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-dark-bg ${
+                      device.status === 'active' ? 'bg-green-500' : 
+                      device.status === 'offline' ? 'bg-red-500' : 
+                      'bg-yellow-500'
+                    }`} />
+                  </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white">{device.name}</h3>
+                    <h3 className="text-lg font-semibold text-white group-hover:text-cyan-400 transition-colors">
+                      {device.name}
+                    </h3>
                     <p className="text-sm text-gray-400">{device.deviceId}</p>
                   </div>
                 </div>
                 <div className="relative">
-                  <button className="p-1 hover:bg-white/10 rounded">
-                    <MoreVertical className="w-4 h-4 text-gray-400" />
-                  </button>
-                  {/* Dropdown menu would go here */}
+                  <Eye className="w-5 h-5 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </div>
 
               <div className="space-y-3 mb-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-400">Driver</span>
+                  <span className="text-sm font-medium text-white">
+                    {device.driverName || 'Not assigned'}
+                  </span>
+                </div>
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">Status</span>
                   <span className={`text-sm font-medium ${getStatusColor(device.status)}`}>
@@ -379,11 +405,8 @@ const Devices = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Battery</span>
-                  <div className="flex items-center space-x-2">
-                    <Battery className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-white">{device.batteryLevel || 85}%</span>
-                  </div>
+                  <span className="text-sm text-gray-400">Vehicle</span>
+                  <span className="text-sm text-white">{device.vehicleNumber || 'N/A'}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -404,18 +427,32 @@ const Devices = () => {
 
               <div className="flex space-x-2">
                 <button
-                  onClick={() => setEditingDevice(device)}
-                  className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-(--primary-blue)/20 hover:bg-(--primary-blue)/30 text-(--primary-blue) rounded-lg transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/dashboard/driver/${device.id}`);
+                  }}
+                  className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 rounded-lg transition-colors"
                 >
-                  <Edit className="w-4 h-4" />
-                  <span className="text-sm">Edit</span>
+                  <Eye className="w-4 h-4" />
+                  <span className="text-sm">View Details</span>
                 </button>
                 <button
-                  onClick={() => handleDeleteDevice(device.id)}
-                  className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingDevice(device);
+                  }}
+                  className="flex items-center justify-center px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 rounded-lg transition-colors"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteDevice(device.id);
+                  }}
+                  className="flex items-center justify-center px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
-                  <span className="text-sm">Delete</span>
                 </button>
               </div>
             </motion.div>

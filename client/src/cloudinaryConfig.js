@@ -1,7 +1,6 @@
 // Cloudinary Configuration
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-const CLOUDINARY_API_KEY = import.meta.env.VITE_CLOUDINARY_API_KEY;
-const CLOUDINARY_API_SECRET = import.meta.env.VITE_CLOUDINARY_API_SECRET;
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'ml_default';
 
 /**
  * Generate Cloudinary signature for authenticated uploads
@@ -24,19 +23,16 @@ export const uploadToCloudinary = async (file) => {
       throw new Error('Cloudinary cloud name not configured. Please set VITE_CLOUDINARY_CLOUD_NAME in .env file');
     }
     
-    if (!CLOUDINARY_API_KEY) {
-      throw new Error('Cloudinary API key not configured. Please set VITE_CLOUDINARY_API_KEY in .env file');
+    if (!CLOUDINARY_UPLOAD_PRESET) {
+      throw new Error('Cloudinary upload preset not configured. Please set VITE_CLOUDINARY_UPLOAD_PRESET in .env file or create an unsigned upload preset in Cloudinary dashboard');
     }
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('api_key', CLOUDINARY_API_KEY);
-    formData.append('timestamp', Math.round(Date.now() / 1000));
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
     formData.append('folder', 'alchozero/drivers');
     
-    // Note: For production, use signed uploads via backend
-    // This uses unsigned upload for development
-
+    // Using unsigned upload - no API key or signature required
     const response = await fetch(
       `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
       {
@@ -46,7 +42,8 @@ export const uploadToCloudinary = async (file) => {
     );
 
     if (!response.ok) {
-      throw new Error('Upload failed');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error?.message || `Upload failed with status ${response.status}`);
     }
 
     const data = await response.json();
@@ -105,4 +102,4 @@ export const getOptimizedImageUrl = (url, options = {}) => {
   return url;
 };
 
-export { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET };
+export { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET };
