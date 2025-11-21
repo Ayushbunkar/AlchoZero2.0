@@ -7,23 +7,46 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Features from './pages/Features';
 import Contact from './pages/Contact';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './dashboard/Dashboard';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-[#0a0a0a] text-white">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/features" element={<Features />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
-          <Footer />
-        </div>
+        <Routes>
+          {/* Public routes with Navbar and Footer */}
+          <Route path="/" element={
+            <div className="min-h-screen bg-[#0a0a0a] text-white">
+              <Navbar />
+              <Home />
+              <Footer />
+            </div>
+          } />
+          <Route path="/about" element={
+            <div className="min-h-screen bg-[#0a0a0a] text-white">
+              <Navbar />
+              <About />
+              <Footer />
+            </div>
+          } />
+          <Route path="/features" element={
+            <div className="min-h-screen bg-[#0a0a0a] text-white">
+              <Navbar />
+              <Features />
+              <Footer />
+            </div>
+          } />
+          <Route path="/contact" element={
+            <div className="min-h-screen bg-[#0a0a0a] text-white">
+              <Navbar />
+              <Contact />
+              <Footer />
+            </div>
+          } />
+          
+          {/* Dashboard routes - NO Navbar/Footer, full h-screen */}
+          <Route path="/dashboard/*" element={<Dashboard />} />
+        </Routes>
       </Router>
     </AuthProvider>
   );

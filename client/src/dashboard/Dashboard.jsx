@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useNavigate } from 'react-router-dom';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { Menu } from 'lucide-react';
 import {
-  getCurrentUser,
   onAuthStateChange,
   loginUser,
   listenToDeviceStatus,
@@ -11,73 +11,54 @@ import {
   getAlerts,
 } from '../firebaseConfig';
 import DeviceCard from '../components/DeviceCard';
+import Sidebar from './Sidebar';
+import Monitor from './Monitor';
+import Alerts from './Alerts';
+import Analytics from './Analytics';
+import Devices from './Devices';
+import Security from './Security';
+import Settings from './Settings';
 
-const Dashboard = () => {
-  const navigate = useNavigate();
+const DashboardHome = () => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [authLoading, setAuthLoading] = useState(false);
-  
-  // Login form state
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
-
-  // Device data
   const [deviceData, setDeviceData] = useState({
     alcoholLevel: 0,
     engine: 'UNKNOWN',
     timestamp: Date.now(),
     connected: false,
   });
-
-  // Historical data
   const [logs, setLogs] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [chartData, setChartData] = useState([]);
 
-  // Check authentication
+  // Listen to device status in real-time
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
+    const unsubscribe = listenToDeviceStatus('Car123', (data) => {
+      setDeviceData(data);
+      
+      // Update chart data
+      setChartData((prev) => {
+        const newData = [
+          ...prev.slice(-19),
+          {
+            time: new Date(data.timestamp).toLocaleTimeString(),
+            alcoholLevel: data.alcoholLevel,
+            timestamp: data.timestamp,
+          },
+        ];
+        return newData;
+      });
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Listen to device status in real-time
-  useEffect(() => {
-    if (user) {
-      const unsubscribe = listenToDeviceStatus('Car123', (data) => {
-        setDeviceData(data);
-        
-        // Update chart data
-        setChartData((prev) => {
-          const newData = [
-            ...prev.slice(-19),
-            {
-              time: new Date(data.timestamp).toLocaleTimeString(),
-              alcoholLevel: data.alcoholLevel,
-              timestamp: data.timestamp,
-            },
-          ];
-          return newData;
-        });
-      });
-
-      return () => unsubscribe();
-    }
-  }, [user]);
-
   // Fetch logs and alerts
   useEffect(() => {
-    if (user) {
-      fetchData();
-      const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
-      return () => clearInterval(interval);
-    }
-  }, [user]);
+    fetchData();
+    const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchData = async () => {
     const logsResult = await getDeviceLogs(50);
@@ -89,22 +70,6 @@ const Dashboard = () => {
     if (alertsResult.success) {
       setAlerts(alertsResult.alerts);
     }
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setAuthLoading(true);
-    setLoginError('');
-
-    const result = await loginUser(email, password);
-    
-    if (result.success) {
-      setUser(result.user);
-    } else {
-      setLoginError(result.error);
-    }
-    
-    setAuthLoading(false);
   };
 
   // Get status info
@@ -141,99 +106,10 @@ const Dashboard = () => {
     };
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-neon-blue mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Login Form
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4 pt-16">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="glass-card p-8 w-full max-w-md"
-        >
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold bg-linear-to-r from-(--primary-blue) to-(--accent-blue) bg-clip-text text-transparent mb-2">
-              Admin Login
-            </h1>
-            <p className="text-gray-400">Sign in to access the dashboard</p>
-          </div>
-
-          {loginError && (
-            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg">
-              <p className="text-red-400 text-sm">✗ {loginError}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-dark-bg border border-white/20 rounded-lg text-white focus:outline-none focus:border-neon-blue transition-colors"
-                placeholder="admin@alchozero.com"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-dark-bg border border-white/20 rounded-lg text-white focus:outline-none focus:border-neon-blue transition-colors"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={authLoading}
-              className={`w-full py-3 rounded-lg font-semibold text-white transition-all duration-300 ${
-                authLoading
-                  ? 'bg-gray-600 cursor-not-allowed'
-                  : 'bg-linear-to-r from-(--primary-blue) to-(--accent-blue) hover:shadow-lg hover:shadow-(--primary-blue)/50'
-              }`}
-            >
-              {authLoading ? 'Signing in...' : 'Sign In'}
-            </button>
-          </form>
-
-          <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-            <p className="text-sm text-gray-400 text-center">
-              <strong>Demo Credentials:</strong><br />
-              Email: admin@alchozero.com<br />
-              Password: Admin@123
-            </p>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
   const statusInfo = getStatusInfo();
 
-  // Main Dashboard
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -512,6 +388,170 @@ const Dashboard = () => {
             </div>
           </motion.div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+const Dashboard = () => {
+  const location = useLocation();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Login form state
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  // Check authentication
+  useEffect(() => {
+    const unsubscribe = onAuthStateChange((currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setAuthLoading(true);
+    setLoginError('');
+
+    const result = await loginUser(email, password);
+    
+    if (result.success) {
+      setUser(result.user);
+    } else {
+      setLoginError(result.error);
+    }
+    
+    setAuthLoading(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-neon-blue mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Login Form
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 pt-16">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="glass-card p-8 w-full max-w-md"
+        >
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold bg-linear-to-r from-(--primary-blue) to-(--accent-blue) bg-clip-text text-transparent mb-2">
+              Admin Login
+            </h1>
+            <p className="text-gray-400">Sign in to access the dashboard</p>
+          </div>
+
+          {loginError && (
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg">
+              <p className="text-red-400 text-sm">✗ {loginError}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 bg-dark-bg border border-white/20 rounded-lg text-white focus:outline-none focus:border-neon-blue transition-colors"
+                placeholder="admin@alchozero.com"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-dark-bg border border-white/20 rounded-lg text-white focus:outline-none focus:border-neon-blue transition-colors"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={authLoading}
+              className={`w-full py-3 rounded-lg font-semibold text-white transition-all duration-300 ${
+                authLoading
+                  ? 'bg-gray-600 cursor-not-allowed'
+                  : 'bg-linear-to-r from-(--primary-blue) to-(--accent-blue) hover:shadow-lg hover:shadow-(--primary-blue)/50'
+              }`}
+            >
+              {authLoading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
+
+          <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+            <p className="text-sm text-gray-400 text-center">
+              <strong>Demo Credentials:</strong><br />
+              Email: admin@alchozero.com<br />
+              Password: Admin@123
+            </p>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Main Dashboard with Sidebar and Routing
+  return (
+    <div className="h-screen bg-dark-bg overflow-hidden">
+      {/* Mobile Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-dark-bg/95 backdrop-blur-sm border-b border-white/10">
+        <div className="flex items-center justify-between p-4">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+          >
+            <Menu className="w-6 h-6 text-white" />
+          </button>
+          <h1 className="text-lg font-bold bg-linear-to-r from-(--primary-blue) to-(--accent-blue) bg-clip-text text-transparent">
+            AlchoZero
+          </h1>
+          <div className="w-10"></div> {/* Spacer for centering */}
+        </div>
+      </div>
+
+      {/* Sidebar */}
+      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+
+      {/* Main Content */}
+      <div className="md:ml-64 h-full pt-16 md:pt-0 overflow-y-auto">
+        <Routes>
+          <Route path="/" element={<DashboardHome />} />
+          <Route path="monitor" element={<Monitor />} />
+          <Route path="alerts" element={<Alerts />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="devices" element={<Devices />} />
+          <Route path="security" element={<Security />} />
+          <Route path="settings" element={<Settings />} />
+        </Routes>
       </div>
     </div>
   );

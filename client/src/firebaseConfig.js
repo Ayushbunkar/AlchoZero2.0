@@ -1,18 +1,18 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { getAuth, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, doc, setDoc, getDoc, updateDoc, deleteDoc, where } from 'firebase/firestore';
 import { getDatabase, ref, onValue, set, push } from 'firebase/database';
 
 // 🔥 Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDjPs8l-PKtwIak7A4NMVreRG_82PuMozc",
-  authDomain: "fftour-5ac79.firebaseapp.com",
-  databaseURL: "https://fftour-5ac79-default-rtdb.firebaseio.com",
-  projectId: "fftour-5ac79",
-  storageBucket: "fftour-5ac79.appspot.com",
-  messagingSenderId: "427551679783",
-  appId: "1:427551679783:web:0df888c6c9d85f2eebf502",
-  measurementId: "G-C7F970EMRZ"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
@@ -237,6 +237,332 @@ export const triggerAlert = async (deviceId, alcoholLevel) => {
       status: 'new'
     });
     return { success: true, id: docRef.id };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+// ==========================================
+// 📱 DEVICE MANAGEMENT FUNCTIONS
+// ==========================================
+
+/**
+ * Generate unique driver ID
+ * @returns {Promise<string>} - Generated driver ID
+ */
+export const generateDriverId = async () => {
+  try {
+    // Get the latest driver ID from Firestore
+    const counterRef = doc(db, 'counters', 'driverIdCounter');
+    const counterDoc = await getDoc(counterRef);
+    
+    let nextId = 1;
+    if (counterDoc.exists()) {
+      nextId = (counterDoc.data().current || 0) + 1;
+    }
+    
+    // Update the counter
+    await setDoc(counterRef, { current: nextId }, { merge: true });
+    
+    // Format: DRV-YYYY-XXXX (e.g., DRV-2025-0001)
+    const year = new Date().getFullYear();
+    const paddedId = String(nextId).padStart(4, '0');
+    return `DRV-${year}-${paddedId}`;
+  } catch (error) {
+    console.error('Error generating driver ID:', error);
+    // Fallback to timestamp-based ID
+    return `DRV-${Date.now()}`;
+  }
+};
+
+/**
+ * Get all devices
+ */
+export const getDevices = async () => {
+  try {
+    const q = query(collection(db, 'devices'), orderBy('name'));
+    const querySnapshot = await getDocs(q);
+    const devices = [];
+    querySnapshot.forEach((doc) => {
+      devices.push({ id: doc.id, ...doc.data() });
+    });
+    return { success: true, devices };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Add new device
+ * @param {Object} deviceData - Device data
+ */
+export const addDevice = async (deviceData) => {
+  try {
+    const docRef = await addDoc(collection(db, 'devices'), {
+      ...deviceData,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    });
+    return { success: true, device: { id: docRef.id, ...deviceData } };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Update device
+ * @param {string} deviceId - Device ID
+ * @param {Object} deviceData - Updated device data
+ */
+export const updateDevice = async (deviceId, deviceData) => {
+  try {
+    const deviceRef = doc(db, 'devices', deviceId);
+    await updateDoc(deviceRef, {
+      ...deviceData,
+      updatedAt: Date.now()
+    });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Delete device
+ * @param {string} deviceId - Device ID
+ */
+export const deleteDevice = async (deviceId) => {
+  try {
+    await deleteDoc(doc(db, 'devices', deviceId));
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+// ==========================================
+// 🔒 SECURITY FUNCTIONS
+// ==========================================
+
+/**
+ * Get security logs
+ */
+export const getSecurityLogs = async () => {
+  try {
+    const q = query(
+      collection(db, 'security_logs'),
+      orderBy('timestamp', 'desc'),
+      limit(50)
+    );
+    const querySnapshot = await getDocs(q);
+    const logs = [];
+    querySnapshot.forEach((doc) => {
+      logs.push({ id: doc.id, ...doc.data() });
+    });
+    return { success: true, logs };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Update security settings
+ * @param {Object} settings - Security settings
+ */
+export const updateSecuritySettings = async (settings) => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+
+    const settingsRef = doc(db, 'user_settings', user.uid);
+    await setDoc(settingsRef, {
+      security: settings,
+      updatedAt: Date.now()
+    }, { merge: true });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Get security settings
+ */
+export const getSecuritySettings = async () => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+
+    const settingsRef = doc(db, 'user_settings', user.uid);
+    const docSnap = await getDoc(settingsRef);
+
+    if (docSnap.exists()) {
+      return { success: true, settings: docSnap.data().security || {} };
+    } else {
+      // Return default settings
+      return {
+        success: true,
+        settings: {
+          twoFactorEnabled: false,
+          sessionTimeout: 30,
+          passwordPolicy: 'strong',
+          alertThreshold: 0.15,
+          autoLock: true,
+          auditLogging: true
+        }
+      };
+    }
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+// ==========================================
+// 👤 USER PROFILE FUNCTIONS
+// ==========================================
+
+/**
+ * Update user profile
+ * @param {Object} profileData - Profile data
+ */
+export const updateUserProfile = async (profileData) => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+
+    await updateProfile(user, {
+      displayName: profileData.name,
+      phoneNumber: profileData.phone
+    });
+
+    // Update additional profile data in Firestore
+    const profileRef = doc(db, 'user_profiles', user.uid);
+    await setDoc(profileRef, {
+      ...profileData,
+      updatedAt: Date.now()
+    }, { merge: true });
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Export user data
+ */
+export const exportUserData = async () => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+
+    const userId = user.uid;
+    const data = {
+      profile: {},
+      devices: [],
+      logs: [],
+      alerts: [],
+      settings: {},
+      exportedAt: Date.now()
+    };
+
+    // Get user profile
+    const profileRef = doc(db, 'user_profiles', userId);
+    const profileSnap = await getDoc(profileRef);
+    if (profileSnap.exists()) {
+      data.profile = profileSnap.data();
+    }
+
+    // Get devices
+    const devicesQuery = query(collection(db, 'devices'), where('userId', '==', userId));
+    const devicesSnap = await getDocs(devicesQuery);
+    devicesSnap.forEach((doc) => {
+      data.devices.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Get logs
+    const logsQuery = query(collection(db, 'logs'), where('userId', '==', userId));
+    const logsSnap = await getDocs(logsQuery);
+    logsSnap.forEach((doc) => {
+      data.logs.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Get alerts
+    const alertsQuery = query(collection(db, 'alerts'), where('userId', '==', userId));
+    const alertsSnap = await getDocs(alertsQuery);
+    alertsSnap.forEach((doc) => {
+      data.alerts.push({ id: doc.id, ...doc.data() });
+    });
+
+    // Get settings
+    const settingsRef = doc(db, 'user_settings', userId);
+    const settingsSnap = await getDoc(settingsRef);
+    if (settingsSnap.exists()) {
+      data.settings = settingsSnap.data();
+    }
+
+    return { success: true, data };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Import user data
+ * @param {Object} data - Data to import
+ */
+export const importUserData = async (data) => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+
+    const userId = user.uid;
+
+    // Import profile
+    if (data.profile) {
+      const profileRef = doc(db, 'user_profiles', userId);
+      await setDoc(profileRef, { ...data.profile, userId }, { merge: true });
+    }
+
+    // Import devices
+    if (data.devices && Array.isArray(data.devices)) {
+      for (const device of data.devices) {
+        const { id, ...deviceData } = device;
+        await addDoc(collection(db, 'devices'), { ...deviceData, userId });
+      }
+    }
+
+    // Import settings
+    if (data.settings) {
+      const settingsRef = doc(db, 'user_settings', userId);
+      await setDoc(settingsRef, data.settings, { merge: true });
+    }
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Clear all user data
+ */
+export const clearAllData = async () => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+
+    const userId = user.uid;
+
+    // This is a simplified version - in production, you'd want to delete all user-related documents
+    // For now, we'll just clear the user profile and settings
+    const profileRef = doc(db, 'user_profiles', userId);
+    await deleteDoc(profileRef);
+
+    const settingsRef = doc(db, 'user_settings', userId);
+    await deleteDoc(settingsRef);
+
+    return { success: true };
   } catch (error) {
     return { success: false, error: error.message };
   }
