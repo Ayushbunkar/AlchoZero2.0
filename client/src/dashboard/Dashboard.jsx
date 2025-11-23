@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -10,14 +10,16 @@ import {
   listenToMultipleDevices,
 } from '../firebaseConfig';
 import Sidebar from './Sidebar';
-import Monitor from './Monitor';
-import DriverMonitor from './DriverMonitor';
-import Alerts from './Alerts';
-import Analytics from './Analytics';
-import Devices from './Devices';
-import DriverProfile from './DriverProfile';
-import Security from './Security';
-import Settings from './Settings';
+
+// Lazy load dashboard components for better performance
+const Monitor = lazy(() => import('./Monitor'));
+const DriverMonitor = lazy(() => import('./DriverMonitor'));
+const Alerts = lazy(() => import('./Alerts'));
+const Analytics = lazy(() => import('./Analytics'));
+const Devices = lazy(() => import('./Devices'));
+const DriverProfile = lazy(() => import('./DriverProfile'));
+const Security = lazy(() => import('./Security'));
+const Settings = lazy(() => import('./Settings'));
 
 const DashboardHome = () => {
   const [user, setUser] = useState(null);
@@ -407,18 +409,27 @@ const Dashboard = () => {
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
       {/* Main Content */}
-      <div className="md:ml-64 h-full pt-20 mt-14 overflow-y-auto">
-        <Routes>
-          <Route path="/" element={<DashboardHome />} />
-          <Route path="monitor" element={<Monitor />} />
-          <Route path="monitor/:deviceId" element={<DriverMonitor />} />
-          <Route path="alerts" element={<Alerts />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="devices" element={<Devices />} />
-          <Route path="driver/:deviceId" element={<DriverProfile />} />
-          <Route path="security" element={<Security />} />
-          <Route path="settings" element={<Settings />} />
-        </Routes>
+      <div className="md:ml-64 h-full pt-20 md:pt-16 overflow-y-auto">
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-cyan-400 mx-auto mb-4"></div>
+              <p className="text-gray-400">Loading...</p>
+            </div>
+          </div>
+        }>
+          <Routes>
+            <Route path="/" element={<DashboardHome />} />
+            <Route path="monitor" element={<Monitor />} />
+            <Route path="monitor/:deviceId" element={<DriverMonitor />} />
+            <Route path="alerts" element={<Alerts />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="devices" element={<Devices />} />
+            <Route path="driver/:deviceId" element={<DriverProfile />} />
+            <Route path="security" element={<Security />} />
+            <Route path="settings" element={<Settings />} />
+          </Routes>
+        </Suspense>
       </div>
     </div>
   );

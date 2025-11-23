@@ -51,7 +51,7 @@ const Hero = ({ title, highlight, subtitle, primaryAction, secondaryAction, onPr
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
         {imageFirst && (
           <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-            <img src={imageSrc} alt={imageAlt} className="w-full h-auto rounded-xl border border-white/10 shadow-soft object-cover" loading="eager" />
+            <img src={imageSrc} alt={imageAlt} className="w-full h-auto rounded-xl border border-white/10 shadow-soft object-cover" loading="lazy" />
           </motion.div>
         )}
         <div className={imageFirst ? 'order-last md:order-0 text-center md:text-left' : 'text-center md:text-left'}>
@@ -92,7 +92,7 @@ const Hero = ({ title, highlight, subtitle, primaryAction, secondaryAction, onPr
         </div>
         {!imageFirst && (
           <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-            <img src={imageSrc} alt={imageAlt} className="w-full h-auto rounded-xl border border-white/10 shadow-soft object-cover" loading="eager" />
+            <img src={imageSrc} alt={imageAlt} className="w-full h-auto rounded-xl border border-white/10 shadow-soft object-cover" loading="lazy" />
           </motion.div>
         )}
       </div>
