@@ -407,7 +407,7 @@ const Dashboard = () => {
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
       {/* Main Content */}
-      <div className="md:ml-64 h-full pt-16 md:pt-16 overflow-y-auto">
+      <div className="md:ml-64 h-full pt-20 mt-14 overflow-y-auto">
         <Routes>
           <Route path="/" element={<DashboardHome />} />
           <Route path="monitor" element={<Monitor />} />
