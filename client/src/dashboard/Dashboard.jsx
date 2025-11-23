@@ -271,6 +271,7 @@ const Dashboard = () => {
 
   // Check authentication
   useEffect(() => {
+    console.log('Dashboard component rendering, path:', location.pathname);
     const unsubscribe = onAuthStateChange((currentUser) => {
       setUser(currentUser);
       setLoading(false);
@@ -386,8 +387,8 @@ const Dashboard = () => {
   // Main Dashboard with Sidebar and Routing
   return (
     <div className="h-screen bg-dark-bg overflow-hidden">
-      {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-dark-bg/95 backdrop-blur-sm border-b border-white/10">
+      {/* Mobile Sidebar Toggle - positioned below navbar */}
+      <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-dark-bg/95 backdrop-blur-sm border-b border-white/10">
         <div className="flex items-center justify-between p-4">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -396,7 +397,7 @@ const Dashboard = () => {
             <Menu className="w-6 h-6 text-white" />
           </button>
           <h1 className="text-lg font-bold bg-linear-to-r from-(--primary-blue) to-(--accent-blue) bg-clip-text text-transparent">
-            AlchoZero
+            AlchoZero Dashboard
           </h1>
           <div className="w-10"></div> {/* Spacer for centering */}
         </div>
@@ -406,7 +407,7 @@ const Dashboard = () => {
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
       {/* Main Content */}
-      <div className="md:ml-64 h-full pt-16 md:pt-0 overflow-y-auto">
+      <div className="md:ml-64 h-full pt-16 md:pt-16 overflow-y-auto">
         <Routes>
           <Route path="/" element={<DashboardHome />} />
           <Route path="monitor" element={<Monitor />} />

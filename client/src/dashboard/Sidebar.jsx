@@ -100,10 +100,10 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 md:top-0 bottom-0 w-64 bg-dark-bg border-r border-white/10 z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 flex flex-col`}>
+      <div className={`fixed left-0 top-16 bottom-0 w-64 bg-dark-bg border-r border-white/10 z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 flex flex-col`}>
       
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-white/10 mt-16 md:mt-0">
+        <div className="flex items-center justify-between p-4 border-b border-white/10">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-linear-to-r from-(--primary-blue) to-(--accent-blue) rounded-lg flex items-center justify-center">
               <Shield className="w-5 h-5 text-white" />
