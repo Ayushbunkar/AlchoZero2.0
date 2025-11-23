@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, doc, setDoc, getDoc, updateDoc, deleteDoc, where, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { getDatabase, ref, onValue, set, push } from 'firebase/database';
 
@@ -15,6 +15,22 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
+// Validate Firebase configuration
+const validateFirebaseConfig = () => {
+  const requiredKeys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+  const missingKeys = requiredKeys.filter(key => !firebaseConfig[key]);
+  
+  if (missingKeys.length > 0) {
+    console.error('❌ Missing Firebase configuration:', missingKeys);
+    return false;
+  }
+  return true;
+};
+
+if (!validateFirebaseConfig()) {
+  throw new Error('Firebase configuration is incomplete. Please check your environment variables.');
+}
+
 // Initialize Firebase
 let app, auth, db, rtdb;
 
@@ -23,13 +39,10 @@ try {
   auth = getAuth(app);
   db = getFirestore(app);
   rtdb = getDatabase(app);
+  console.log('✅ Firebase initialized successfully');
 } catch (error) {
-  console.warn('Firebase initialization failed. Using demo mode.', error.message);
-  // Create mock objects for development without Firebase
-  app = null;
-  auth = { currentUser: null };
-  db = null;
-  rtdb = null;
+  console.error('❌ Firebase initialization failed:', error.message);
+  throw new Error('Firebase initialization failed. Please check your configuration.');
 }
 
 // ==========================================
@@ -140,7 +153,11 @@ export const getCurrentUser = () => {
  * Subscribe to auth state changes
  */
 export const onAuthStateChange = (callback) => {
-  return auth.onAuthStateChanged(callback);
+  if (!auth) {
+    console.error('Auth not initialized');
+    return () => {};
+  }
+  return onAuthStateChanged(auth, callback);
 };
 
 // ==========================================
