@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { Menu } from 'lucide-react';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { Menu, Eye } from 'lucide-react';
 import {
   onAuthStateChange,
   loginUser,
-  listenToDeviceStatus,
-  getDeviceLogs,
-  getAlerts,
+  getAdminDevices,
+  listenToMultipleDevices,
 } from '../firebaseConfig';
-import DeviceCard from '../components/DeviceCard';
 import Sidebar from './Sidebar';
 import Monitor from './Monitor';
+import DriverMonitor from './DriverMonitor';
 import Alerts from './Alerts';
 import Analytics from './Analytics';
 import Devices from './Devices';
@@ -22,373 +21,237 @@ import Settings from './Settings';
 
 const DashboardHome = () => {
   const [user, setUser] = useState(null);
-  const [deviceData, setDeviceData] = useState({
-    alcoholLevel: 0,
-    engine: 'UNKNOWN',
-    timestamp: Date.now(),
-    connected: false,
-  });
-  const [logs, setLogs] = useState([]);
-  const [alerts, setAlerts] = useState([]);
-  const [chartData, setChartData] = useState([]);
+  const [devices, setDevices] = useState([]);
+  const [realtimeData, setRealtimeData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Listen to device status in real-time
   useEffect(() => {
-    const unsubscribe = listenToDeviceStatus('Car123', (data) => {
-      setDeviceData(data);
-      
-      // Update chart data
-      setChartData((prev) => {
-        const newData = [
-          ...prev.slice(-19),
-          {
-            time: new Date(data.timestamp).toLocaleTimeString(),
-            alcoholLevel: data.alcoholLevel,
-            timestamp: data.timestamp,
-          },
-        ];
-        return newData;
-      });
+    const unsubscribe = onAuthStateChange(async (currentUser) => {
+      setUser(currentUser);
+      if (!currentUser) {
+        setLoading(false);
+        return;
+      }
+      // Fetch admin's devices
+      const result = await getAdminDevices();
+      setDevices(result.devices || []);
+      setLoading(false);
+      // Listen to all devices' real-time data
+      const deviceIds = (result.devices || []).map((d) => d.id);
+      if (deviceIds.length > 0) {
+        listenToMultipleDevices(deviceIds, (data) => {
+          setRealtimeData({ ...data });
+        });
+      }
     });
-
-    return () => unsubscribe();
+    return () => unsubscribe && unsubscribe();
   }, []);
 
-  // Fetch logs and alerts
-  useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
-    return () => clearInterval(interval);
-  }, []);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-neon-blue mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const fetchData = async () => {
-    const logsResult = await getDeviceLogs(50);
-    if (logsResult.success) {
-      setLogs(logsResult.logs);
-    }
+  // Quick stats calculation
+  const total = devices.length;
+  let online = 0, offline = 0, critical = 0;
+  devices.forEach((device) => {
+    const data = realtimeData[device.id] || {};
+    if (data.connected) online++;
+    else offline++;
+    if (data.alcoholLevel > 0.3) critical++;
+  });
 
-    const alertsResult = await getAlerts(20);
-    if (alertsResult.success) {
-      setAlerts(alertsResult.alerts);
-    }
-  };
+  // Pie chart data
+  const pieData = [
+    { name: 'Online', value: online },
+    { name: 'Offline', value: offline },
+    { name: 'Critical', value: critical },
+  ];
+  const pieColors = ['#22d3ee', '#64748b', '#f87171'];
 
-  // Get status info
-  const getStatusInfo = () => {
-    if (!deviceData.connected) {
-      return {
-        text: 'DISCONNECTED',
-        color: 'text-gray-400',
-        bgColor: 'bg-gray-500/20',
-        borderColor: 'border-gray-500/50',
-      };
-    }
-    if (deviceData.alcoholLevel > 0.3) {
-      return {
-        text: 'ALERT - HIGH LEVEL',
-        color: 'text-red-400',
-        bgColor: 'bg-red-500/20',
-        borderColor: 'border-red-500/50',
-      };
-    }
-    if (deviceData.alcoholLevel > 0.15) {
-      return {
-        text: 'WARNING',
-        color: 'text-yellow-400',
-        bgColor: 'bg-yellow-500/20',
-        borderColor: 'border-yellow-500/50',
-      };
-    }
-    return {
-      text: 'SAFE',
-      color: 'text-cyan-400',
-      bgColor: 'bg-cyan-500/20',
-      borderColor: 'border-cyan-500/50',
-    };
-  };
-
-  const statusInfo = getStatusInfo();
+  // Bar chart data
+  const barData = [
+    { name: 'Devices', Online: online, Offline: offline, Critical: critical },
+  ];
 
   return (
-    <div className="p-4 md:p-6 lg:p-8">
+    <div className="p-4 md:p-6 lg:p-8 bg-gradient-to-br from-gray-950 to-gray-900 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+
+        {/* Welcome Header & Fleet Overview */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-8"
+          className="mb-8 flex flex-col gap-6"
         >
-          <h1 className="text-4xl font-bold mb-2 bg-linear-to-r from-(--primary-blue) to-(--accent-blue) bg-clip-text text-transparent">
-            Real-time Dashboard
-          </h1>
-          <p className="text-gray-400">
-            Monitoring Device: <span className="text-neon-blue font-semibold">Car123</span>
-          </p>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-bold mb-2 bg-linear-to-r from-(--primary-blue) to-(--accent-blue) bg-clip-text text-transparent flex items-center gap-3">
+                <span role="img" aria-label="dashboard">📊</span> Real-time Dashboard
+              </h1>
+              <p className="text-gray-400">
+                {devices.length === 0 ? 'No devices found.' : `Monitoring ${devices.length} device${devices.length > 1 ? 's' : ''} in your fleet.`}
+              </p>
+            </div>
+            <div className="flex gap-4">
+              <div className="bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 text-center">
+                <div className="text-2xl font-bold text-cyan-400">{total}</div>
+                <div className="text-xs text-gray-400 mt-1">Total Devices</div>
+              </div>
+              <div className="bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 text-center">
+                <div className="text-2xl font-bold text-green-400">{online}</div>
+                <div className="text-xs text-gray-400 mt-1">Online</div>
+              </div>
+              <div className="bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 text-center">
+                <div className="text-2xl font-bold text-gray-400">{offline}</div>
+                <div className="text-xs text-gray-400 mt-1">Offline</div>
+              </div>
+              <div className="bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 text-center">
+                <div className="text-2xl font-bold text-red-400">{critical}</div>
+                <div className="text-xs text-gray-400 mt-1">Critical Alerts</div>
+              </div>
+            </div>
+          </div>
+          {/* Fleet Overview Graphs */}
+          <div className="flex flex-col md:flex-row gap-8 w-full">
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex-1 flex flex-col items-center justify-center">
+              <h2 className="text-lg font-semibold text-gray-200 mb-2">Device Status Distribution</h2>
+              <ResponsiveContainer width="100%" height={180}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={60}
+                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                  >
+                    {pieData.map((entry, idx) => (
+                      <Cell key={`cell-${idx}`} fill={pieColors[idx % pieColors.length]} />
+                    ))}
+                  </Pie>
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex-1 flex flex-col items-center justify-center">
+              <h2 className="text-lg font-semibold text-gray-200 mb-2">Device Status Bar</h2>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart data={barData}>
+                  <XAxis dataKey="name" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" allowDecimals={false} />
+                  <Tooltip contentStyle={{ background: '#1e293b', border: '1px solid #334155', color: '#fff' }} />
+                  <Legend />
+                  <Bar dataKey="Online" fill="#22d3ee" />
+                  <Bar dataKey="Offline" fill="#64748b" />
+                  <Bar dataKey="Critical" fill="#f87171" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </motion.div>
 
-        {/* Status Overview */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="glass-card p-6"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Alcohol Level</span>
-              <span className="text-2xl">🔬</span>
-            </div>
-            <div className="text-3xl font-bold text-neon-blue">
-              {deviceData.alcoholLevel.toFixed(3)}
-            </div>
-            <div className="text-xs text-gray-500 mt-1">BAC (mg/L)</div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="glass-card p-6"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Engine Status</span>
-              <span className="text-2xl">{deviceData.engine === 'ON' ? '🟢' : '🔴'}</span>
-            </div>
-            <div className="text-3xl font-bold text-white">
-              {deviceData.engine}
-            </div>
-            <div className="text-xs text-gray-500 mt-1">
-              {deviceData.engine === 'ON' ? 'Running' : 'Locked'}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="glass-card p-6"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Status</span>
-              <span className="text-2xl">
-                {deviceData.connected ? '✅' : '❌'}
-              </span>
-            </div>
-            <div className={`text-2xl font-bold ${statusInfo.color}`}>
-              {statusInfo.text}
-            </div>
-            <div className="text-xs text-gray-500 mt-1">
-              {deviceData.connected ? 'Connected' : 'Offline'}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="glass-card p-6"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-400 text-sm">Alerts</span>
-              <span className="text-2xl">🚨</span>
-            </div>
-            <div className="text-3xl font-bold text-red-400">
-              {alerts.length}
-            </div>
-            <div className="text-xs text-gray-500 mt-1">Total Alerts</div>
-          </motion.div>
-        </div>
-
-        {/* Device Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mb-8"
-        >
-          <DeviceCard device={{ deviceId: 'Car123', ...deviceData }} />
-        </motion.div>
-
-        {/* Charts */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {/* Real-time Line Chart */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.6 }}
-            className="glass-card p-6"
-          >
-            <h3 className="text-xl font-bold text-white mb-4">
-              Real-time Alcohol Level
-            </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-                <XAxis dataKey="time" stroke="#888" />
-                <YAxis stroke="#888" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#1a1a1a',
-                    border: '1px solid #2a2a2a',
-                    borderRadius: '8px',
-                  }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="alcoholLevel"
-                  stroke="#00f3ff"
-                  strokeWidth={2}
-                  dot={{ fill: '#00f3ff', r: 4 }}
-                  name="BAC Level"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </motion.div>
-
-          {/* Area Chart */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.7 }}
-            className="glass-card p-6"
-          >
-            <h3 className="text-xl font-bold text-white mb-4">
-              Trend Analysis
-            </h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-                <XAxis dataKey="time" stroke="#888" />
-                <YAxis stroke="#888" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#1a1a1a',
-                    border: '1px solid #2a2a2a',
-                    borderRadius: '8px',
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="alcoholLevel"
-                  stroke="#a855f7"
-                  fill="#a855f7"
-                  fillOpacity={0.3}
-                  name="BAC Level"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </motion.div>
-        </div>
-
-        {/* Tables */}
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Recent Logs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            className="glass-card p-6"
-          >
-            <h3 className="text-xl font-bold text-white mb-4">Recent Logs</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left text-sm font-semibold text-gray-400 pb-3">
-                      Time
-                    </th>
-                    <th className="text-left text-sm font-semibold text-gray-400 pb-3">
-                      BAC
-                    </th>
-                    <th className="text-left text-sm font-semibold text-gray-400 pb-3">
-                      Engine
-                    </th>
-                    <th className="text-left text-sm font-semibold text-gray-400 pb-3">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {logs.slice(0, 10).map((log, index) => (
-                    <tr key={log.id} className="border-b border-white/5">
-                      <td className="py-3 text-sm text-gray-300">
-                        {new Date(log.timestamp).toLocaleString()}
-                      </td>
-                      <td className="py-3 text-sm text-neon-blue font-semibold">
-                        {log.alcoholLevel?.toFixed(3) || 'N/A'}
-                      </td>
-                      <td className="py-3 text-sm">
-                        <span
-                          className={`px-2 py-1 rounded text-xs ${
-                            log.engine === 'ON'
-                              ? 'bg-cyan-500/20 text-cyan-400'
-                              : 'bg-red-500/20 text-red-400'
-                          }`}
-                        >
-                          {log.engine}
-                        </span>
-                      </td>
-                      <td className="py-3 text-sm">
-                        <span
-                          className={`px-2 py-1 rounded text-xs ${
-                            log.status === 'ALERT'
-                              ? 'bg-red-500/20 text-red-400'
-                              : 'bg-cyan-500/20 text-cyan-400'
-                          }`}
-                        >
-                          {log.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {logs.length === 0 && (
-                <p className="text-center text-gray-500 py-8">No logs available</p>
-              )}
-            </div>
-          </motion.div>
-
-          {/* Recent Alerts */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-            className="glass-card p-6"
-          >
-            <h3 className="text-xl font-bold text-white mb-4">Active Alerts</h3>
-            <div className="space-y-3 max-h-96 overflow-y-auto">
-              {alerts.slice(0, 10).map((alert, index) => (
-                <div
-                  key={alert.id}
-                  className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-red-400 font-semibold text-sm">
-                      🚨 ALERT
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(alert.timestamp).toLocaleString()}
+        {/* Devices Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {devices.map((device, idx) => {
+            const data = realtimeData[device.id] || {};
+            return (
+              <motion.div
+                key={device.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * idx }}
+                className={`glass-card p-6 hover:bg-white/10 hover:scale-105 transition-all cursor-pointer border-2 ${
+                  data.alcoholLevel > 0.15 ? 'border-red-500/50' : 'border-transparent'
+                } group relative`}
+                onClick={() => navigate(`/dashboard/monitor/${device.id}`)}
+                title="Click to view detailed real-time monitoring"
+              >
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Eye className="w-5 h-5 text-cyan-400" />
+                </div>
+                <div className="flex items-center space-x-3 mb-4">
+                  {device.driverPhoto ? (
+                    <img
+                      src={device.driverPhoto}
+                      alt={device.driverName}
+                      className="w-14 h-14 rounded-full object-cover border-2 border-cyan-500/30"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                      <span className="text-white text-lg font-bold">{device.driverName?.[0] || '?'}</span>
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">
+                      {device.driverName || 'Unknown Driver'}
+                    </h3>
+                    <p className="text-xs text-gray-400">{device.deviceId}</p>
+                    <p className="text-xs text-gray-500">{device.vehicleNumber}</p>
+                  </div>
+                </div>
+                <div className={`mb-4 p-4 rounded-lg ${
+                  data.alcoholLevel > 0.3 ? 'bg-red-500/20 border border-red-500/50' :
+                  data.alcoholLevel > 0.15 ? 'bg-yellow-500/20 border border-yellow-500/50' :
+                  'bg-green-500/20 border border-green-500/50'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-300">BAC Level</span>
+                    <span className={`text-2xl font-bold ${
+                      data.alcoholLevel > 0.3 ? 'text-red-400' :
+                      data.alcoholLevel > 0.15 ? 'text-yellow-400' : 'text-green-400'
+                    }`}>
+                      {data.alcoholLevel?.toFixed(3) || '0.000'}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-300 mb-1">
-                    Device: {alert.deviceId}
-                  </p>
-                  <p className="text-sm text-gray-300">
-                    BAC: <span className="text-red-400 font-semibold">
-                      {alert.alcoholLevel?.toFixed(3)}
-                    </span>
-                  </p>
+                  <div className="text-xs text-gray-400 mt-1">
+                    {data.alcoholLevel > 0.3 ? '🚨 Critical - Engine Locked' :
+                     data.alcoholLevel > 0.15 ? '⚠️ Warning Level' : '✅ Safe to Drive'}
+                  </div>
                 </div>
-              ))}
-              {alerts.length === 0 && (
-                <p className="text-center text-gray-500 py-8">No alerts</p>
-              )}
+                <div className="flex items-center justify-between p-3 bg-dark-bg/50 rounded-lg">
+                  <span className="text-sm text-gray-400">Engine Status</span>
+                  <span className={`text-sm font-semibold ${
+                    data.engine === 'ON' ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {data.engine === 'ON' ? '🔓 Unlocked' : '🔒 Locked'}
+                  </span>
+                </div>
+                <div className="w-full mt-4 flex items-center justify-center space-x-2 px-4 py-2 bg-cyan-500/20 group-hover:bg-cyan-500/30 text-cyan-400 rounded-lg transition-colors">
+                  <Eye className="w-4 h-4" />
+                  <span className="text-sm font-semibold">Click for Real-Time Monitoring</span>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+        {devices.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-16 flex flex-col items-center justify-center"
+          >
+            <img src="/empty-dashboard-illustration.svg" alt="No devices" className="w-48 h-48 mb-6 opacity-80" onError={e => e.target.style.display='none'} />
+            <h3 className="text-2xl font-semibold text-white mb-2">No devices found</h3>
+            <p className="text-gray-400 mb-4">
+              You haven't added any devices yet.<br/>Click "Add Device" in the sidebar to get started!
+            </p>
+            <div className="flex items-center gap-2 justify-center">
+              <span className="text-3xl">➕</span>
+              <span className="text-cyan-400 font-semibold">Add your first device to start monitoring in real-time!</span>
             </div>
           </motion.div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -547,6 +410,7 @@ const Dashboard = () => {
         <Routes>
           <Route path="/" element={<DashboardHome />} />
           <Route path="monitor" element={<Monitor />} />
+          <Route path="monitor/:deviceId" element={<DriverMonitor />} />
           <Route path="alerts" element={<Alerts />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="devices" element={<Devices />} />

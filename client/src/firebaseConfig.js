@@ -326,6 +326,299 @@ export const triggerAlert = async (deviceId, alcoholLevel) => {
 };
 
 // ==========================================
+// 🚨 ADVANCED MONITORING FUNCTIONS
+// ==========================================
+
+/**
+ * Update complete monitoring data for a device
+ * @param {string} deviceId - Device identifier
+ * @param {Object} monitoringData - All monitoring sensor data
+ */
+export const updateDeviceMonitoring = async (deviceId, monitoringData) => {
+  try {
+    // Update Realtime Database for live monitoring
+    const deviceRef = ref(rtdb, `deviceMonitoring/${deviceId}`);
+    await set(deviceRef, {
+      // BAC Detection
+      alcoholLevel: monitoringData.alcoholLevel || 0,
+      engine: monitoringData.engine || 'UNKNOWN',
+      
+      // Face Authentication
+      faceAuth: {
+        verified: monitoringData.faceAuth?.verified || false,
+        confidence: monitoringData.faceAuth?.confidence || 0,
+        lastCheck: Date.now()
+      },
+      
+      // Drowsiness Detection (PERCLOS)
+      drowsiness: {
+        detected: monitoringData.drowsiness?.detected || false,
+        perclosValue: monitoringData.drowsiness?.perclosValue || 0,
+        eyesClosed: monitoringData.drowsiness?.eyesClosed || false,
+        severity: monitoringData.drowsiness?.severity || 'none' // none, mild, severe
+      },
+      
+      // Distraction Detection
+      distraction: {
+        detected: monitoringData.distraction?.detected || false,
+        type: monitoringData.distraction?.type || null, // phone, smoking, looking_away
+        duration: monitoringData.distraction?.duration || 0
+      },
+      
+      // Audio Alcohol Analysis
+      audioAlcohol: {
+        detected: monitoringData.audioAlcohol?.detected || false,
+        slurringScore: monitoringData.audioAlcohol?.slurringScore || 0,
+        confidence: monitoringData.audioAlcohol?.confidence || 0
+      },
+      
+      // Rash Driving Detection
+      rashDriving: {
+        detected: monitoringData.rashDriving?.detected || false,
+        harshBraking: monitoringData.rashDriving?.harshBraking || false,
+        drifting: monitoringData.rashDriving?.drifting || false,
+        overSpeeding: monitoringData.rashDriving?.overSpeeding || false,
+        speed: monitoringData.rashDriving?.speed || 0,
+        acceleration: monitoringData.rashDriving?.acceleration || 0
+      },
+      
+      // Driver Behavior Score
+      driverScore: monitoringData.driverScore || 85,
+      
+      // Connection & Timestamp
+      connected: true,
+      timestamp: Date.now(),
+      location: monitoringData.location || null
+    });
+    
+    // Also log to Firestore for history
+    await addDoc(collection(db, 'monitoring_logs'), {
+      deviceId,
+      ...monitoringData,
+      timestamp: Date.now()
+    });
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating device monitoring:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Listen to complete device monitoring data in real-time
+ * @param {string} deviceId - Device identifier
+ * @param {function} callback - Callback function
+ */
+export const listenToDeviceMonitoring = (deviceId, callback) => {
+  const deviceRef = ref(rtdb, `deviceMonitoring/${deviceId}`);
+  return onValue(deviceRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      callback({
+        ...data,
+        connected: true
+      });
+    } else {
+      callback({
+        alcoholLevel: 0,
+        engine: 'UNKNOWN',
+        faceAuth: { verified: false, confidence: 0 },
+        drowsiness: { detected: false, perclosValue: 0 },
+        distraction: { detected: false, type: null },
+        audioAlcohol: { detected: false, slurringScore: 0 },
+        rashDriving: { detected: false, harshBraking: false },
+        driverScore: 0,
+        connected: false,
+        timestamp: Date.now()
+      });
+    }
+  }, (error) => {
+    console.error('Firebase RTDB Error:', error);
+    callback({
+      connected: false,
+      error: error.message
+    });
+  });
+};
+
+/**
+ * Get monitoring history for a device
+ * @param {string} deviceId - Device identifier
+ * @param {number} limitCount - Number of records to retrieve
+ */
+export const getMonitoringHistory = async (deviceId, limitCount = 50) => {
+  try {
+    const q = query(
+      collection(db, 'monitoring_logs'),
+      where('deviceId', '==', deviceId),
+      orderBy('timestamp', 'desc'),
+      limit(limitCount)
+    );
+    const querySnapshot = await getDocs(q);
+    const logs = [];
+    querySnapshot.forEach((doc) => {
+      logs.push({ id: doc.id, ...doc.data() });
+    });
+    return { success: true, logs };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Update driver behavior score
+ * @param {string} deviceId - Device identifier
+ * @param {number} score - Behavior score (0-100)
+ * @param {Object} factors - Factors affecting the score
+ */
+export const updateDriverBehaviorScore = async (deviceId, score, factors = {}) => {
+  try {
+    await addDoc(collection(db, 'behavior_scores'), {
+      deviceId,
+      score,
+      factors: {
+        safeDriving: factors.safeDriving || 0,
+        rashDrivingEvents: factors.rashDrivingEvents || 0,
+        distractionEvents: factors.distractionEvents || 0,
+        drowsinessEvents: factors.drowsinessEvents || 0,
+        alcoholDetections: factors.alcoholDetections || 0,
+        totalTrips: factors.totalTrips || 0
+      },
+      timestamp: Date.now()
+    });
+    
+    // Update in realtime database
+    const deviceRef = ref(rtdb, `deviceMonitoring/${deviceId}/driverScore`);
+    await set(deviceRef, score);
+    
+    return { success: true, score };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Create safety alert for detected issues
+ * @param {string} deviceId - Device identifier
+ * @param {string} alertType - Type of alert
+ * @param {Object} data - Alert data
+ */
+export const createSafetyAlert = async (deviceId, alertType, data = {}) => {
+  try {
+    const alertRef = collection(db, 'safety_alerts');
+    const docRef = await addDoc(alertRef, {
+      deviceId,
+      alertType, // 'alcohol', 'drowsiness', 'distraction', 'rash_driving', 'face_auth_failed'
+      severity: data.severity || 'medium', // low, medium, high, critical
+      message: data.message || `${alertType} detected`,
+      data: data,
+      resolved: false,
+      timestamp: Date.now()
+    });
+    
+    // Update alert count in realtime
+    const alertCountRef = ref(rtdb, `deviceAlerts/${deviceId}/count`);
+    const snapshot = await new Promise((resolve) => {
+      onValue(alertCountRef, (snap) => resolve(snap), { onlyOnce: true });
+    });
+    const currentCount = snapshot.val() || 0;
+    await set(alertCountRef, currentCount + 1);
+    
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Get all safety alerts for a device
+ * @param {string} deviceId - Device identifier
+ * @param {number} limitCount - Number of alerts to retrieve
+ */
+export const getSafetyAlerts = async (deviceId, limitCount = 20) => {
+  try {
+    const q = query(
+      collection(db, 'safety_alerts'),
+      where('deviceId', '==', deviceId),
+      orderBy('timestamp', 'desc'),
+      limit(limitCount)
+    );
+    const querySnapshot = await getDocs(q);
+    const alerts = [];
+    querySnapshot.forEach((doc) => {
+      alerts.push({ id: doc.id, ...doc.data() });
+    });
+    return { success: true, alerts };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Listen to all devices monitoring status for admin
+ * @param {Array} deviceIds - Array of device IDs to monitor
+ * @param {function} callback - Callback function
+ */
+export const listenToMultipleDevices = (deviceIds, callback) => {
+  const listeners = {};
+  const deviceData = {};
+  
+  deviceIds.forEach(deviceId => {
+    const deviceRef = ref(rtdb, `deviceMonitoring/${deviceId}`);
+    listeners[deviceId] = onValue(deviceRef, (snapshot) => {
+      const data = snapshot.val();
+      deviceData[deviceId] = data || { connected: false };
+      callback(deviceData);
+    });
+  });
+  
+  // Return unsubscribe function
+  return () => {
+    Object.values(listeners).forEach(unsubscribe => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+    });
+  };
+};
+
+/**
+ * Get driver statistics
+ * @param {string} deviceId - Device identifier
+ */
+export const getDriverStatistics = async (deviceId) => {
+  try {
+    // Get all monitoring logs for the device
+    const logsResult = await getMonitoringHistory(deviceId, 100);
+    if (!logsResult.success) {
+      return { success: false, error: logsResult.error };
+    }
+    
+    const logs = logsResult.logs;
+    
+    // Calculate statistics
+    const stats = {
+      totalTrips: logs.length,
+      alcoholDetections: logs.filter(log => log.alcoholLevel > 0.15).length,
+      drowsinessEvents: logs.filter(log => log.drowsiness?.detected).length,
+      distractionEvents: logs.filter(log => log.distraction?.detected).length,
+      rashDrivingEvents: logs.filter(log => log.rashDriving?.detected).length,
+      faceAuthFailures: logs.filter(log => !log.faceAuth?.verified).length,
+      averageScore: logs.reduce((sum, log) => sum + (log.driverScore || 0), 0) / logs.length || 0,
+      safeTrips: logs.filter(log => 
+        log.alcoholLevel < 0.15 && 
+        !log.drowsiness?.detected && 
+        !log.distraction?.detected &&
+        !log.rashDriving?.detected
+      ).length
+    };
+    
+    return { success: true, statistics: stats };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+// ==========================================
 // 📱 DEVICE MANAGEMENT FUNCTIONS
 // ==========================================
 

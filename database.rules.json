@@ -2,27 +2,17 @@
   "rules": {
     ".read": false,
     ".write": false,
-    
-    "deviceStatus": {
+
+    "deviceMonitoring": {
       "$deviceId": {
-        ".read": "auth != null",
-        ".write": true,
-        
-        "alcoholLevel": {
-          ".validate": "newData.isNumber() && newData.val() >= 0"
-        },
-        
-        "engine": {
-          ".validate": "newData.isString() && (newData.val() == 'ON' || newData.val() == 'OFF' || newData.val() == 'UNKNOWN')"
-        },
-        
-        "timestamp": {
-          ".validate": "newData.isNumber()"
-        },
-        
-        "$other": {
-          ".validate": false
-        }
+        ".read": true,
+        ".write": true
+      }
+    },
+    "deviceAlerts": {
+      "$deviceId": {
+        ".read": true,
+        ".write": true
       }
     }
   }
