@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getCurrentUser, onAuthStateChange, loginUser, logoutUser } from '../firebaseConfig';
+import { getCurrentUser, onAuthStateChange, loginUser, logoutUser, signupUser } from '../firebaseConfig';
 
 const AuthContext = createContext();
 
@@ -29,6 +29,11 @@ export const AuthProvider = ({ children }) => {
     return result;
   };
 
+  const signup = async (email, password, profileData) => {
+    const result = await signupUser(email, password, profileData);
+    return result;
+  };
+
   const logout = async () => {
     const result = await logoutUser();
     return result;
@@ -38,6 +43,7 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     login,
+    signup,
     logout,
     isAuthenticated: !!user,
   };

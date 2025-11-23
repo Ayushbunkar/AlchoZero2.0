@@ -7,6 +7,8 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Features from './pages/Features';
 import Contact from './pages/Contact';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 import Dashboard from './dashboard/Dashboard';
 
 function App() {
@@ -40,6 +42,22 @@ function App() {
             <div className="min-h-screen bg-[#0a0a0a] text-white">
               <Navbar />
               <Contact />
+              <Footer />
+            </div>
+          } />
+          
+          {/* Auth routes with Navbar and Footer */}
+          <Route path="/login" element={
+            <div className="min-h-screen bg-[#0a0a0a] text-white">
+              <Navbar />
+              <Login />
+              <Footer />
+            </div>
+          } />
+          <Route path="/signup" element={
+            <div className="min-h-screen bg-[#0a0a0a] text-white">
+              <Navbar />
+              <Signup />
               <Footer />
             </div>
           } />

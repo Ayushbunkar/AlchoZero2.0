@@ -79,6 +79,11 @@ service cloud.firestore {
       allow create: if isAuthenticated();
     }
     
+    // Admins collection - each admin can read/write their own document
+    match /admins/{adminId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == adminId;
+    }
+    
     // Default deny all other documents
     match /{document=**} {
       allow read, write: if false;

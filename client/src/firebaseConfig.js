@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, doc, setDoc, getDoc, updateDoc, deleteDoc, where } from 'firebase/firestore';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, doc, setDoc, getDoc, updateDoc, deleteDoc, where, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { getDatabase, ref, onValue, set, push } from 'firebase/database';
 
 // 🔥 Firebase Configuration
@@ -48,6 +48,72 @@ export const loginUser = async (email, password) => {
     return { success: true, user: userCredential.user };
   } catch (error) {
     return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Signup new user with email and password
+ * @param {string} email - User email
+ * @param {string} password - User password
+ * @param {Object} profileData - Additional user profile data (name, organization, phone, role)
+ * @returns {Promise} - User credential
+ */
+export const signupUser = async (email, password, profileData = {}) => {
+  try {
+    // Create user account
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Update display name if provided
+    if (profileData.name) {
+      await updateProfile(user, {
+        displayName: profileData.name
+      });
+    }
+
+    // Create admin document with device_ids array
+    try {
+      await setDoc(doc(db, 'admins', user.uid), {
+        admin_id: user.uid,
+        name: profileData.name || '',
+        email: email,
+        device_ids: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      });
+      
+      // Also save to user_profiles for backward compatibility
+      await setDoc(doc(db, 'user_profiles', user.uid), {
+        email: email,
+        name: profileData.name || '',
+        organization: profileData.organization || '',
+        phone: profileData.phone || '',
+        role: profileData.role || 'admin',
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      });
+    } catch (firestoreError) {
+      console.warn('Profile data not saved to Firestore:', firestoreError);
+    }
+
+    return { success: true, user: user };
+  } catch (error) {
+    let errorMessage = 'Signup failed';
+    
+    // Handle specific Firebase Auth errors
+    if (error.code === 'auth/email-already-in-use') {
+      errorMessage = 'This email is already registered. Please login instead.';
+    } else if (error.code === 'auth/invalid-email') {
+      errorMessage = 'Invalid email address format.';
+    } else if (error.code === 'auth/weak-password') {
+      errorMessage = 'Password is too weak. Please use at least 6 characters.';
+    } else if (error.code === 'auth/operation-not-allowed') {
+      errorMessage = 'Email/password accounts are not enabled. Please contact support.';
+    } else {
+      errorMessage = error.message;
+    }
+    
+    return { success: false, error: errorMessage };
   }
 };
 
@@ -305,6 +371,7 @@ export const addDevice = async (deviceData) => {
     const user = getCurrentUser();
     if (!user) return { success: false, error: 'No user logged in' };
     
+    // Add device to devices collection
     const docRef = await addDoc(collection(db, 'devices'), {
       ...deviceData,
       userId: user.uid,
@@ -312,6 +379,17 @@ export const addDevice = async (deviceData) => {
       updatedAt: Date.now(),
       status: deviceData.status || 'active'
     });
+    
+    // Add device ID to admin's device_ids array
+    try {
+      const adminRef = doc(db, 'admins', user.uid);
+      await updateDoc(adminRef, {
+        device_ids: arrayUnion(docRef.id),
+        updatedAt: Date.now()
+      });
+    } catch (adminError) {
+      console.warn('Could not update admin device_ids:', adminError);
+    }
     
     const newDevice = { 
       id: docRef.id, 
@@ -352,8 +430,87 @@ export const updateDevice = async (deviceId, deviceData) => {
  */
 export const deleteDevice = async (deviceId) => {
   try {
+    const user = getCurrentUser();
+    
+    // Delete device document
     await deleteDoc(doc(db, 'devices', deviceId));
+    
+    // Remove device ID from admin's device_ids array
+    if (user) {
+      try {
+        const adminRef = doc(db, 'admins', user.uid);
+        await updateDoc(adminRef, {
+          device_ids: arrayRemove(deviceId),
+          updatedAt: Date.now()
+        });
+      } catch (adminError) {
+        console.warn('Could not update admin device_ids:', adminError);
+      }
+    }
+    
     return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+// ==========================================
+// 👤 ADMIN FUNCTIONS
+// ==========================================
+
+/**
+ * Get admin data including device_ids
+ * @param {string} adminId - Admin user ID (optional, uses current user if not provided)
+ */
+export const getAdminData = async (adminId = null) => {
+  try {
+    const user = adminId || getCurrentUser()?.uid;
+    if (!user) return { success: false, error: 'No user logged in' };
+    
+    const adminRef = doc(db, 'admins', user);
+    const adminDoc = await getDoc(adminRef);
+    
+    if (adminDoc.exists()) {
+      return { success: true, admin: { id: adminDoc.id, ...adminDoc.data() } };
+    } else {
+      return { success: false, error: 'Admin not found' };
+    }
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Get all devices for current admin
+ */
+export const getAdminDevices = async () => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return { success: false, error: 'No user logged in' };
+    
+    // Get admin data to fetch device_ids
+    const adminResult = await getAdminData(user.uid);
+    if (!adminResult.success) {
+      return { success: false, error: 'Could not fetch admin data' };
+    }
+    
+    const deviceIds = adminResult.admin.device_ids || [];
+    
+    if (deviceIds.length === 0) {
+      return { success: true, devices: [] };
+    }
+    
+    // Fetch devices by IDs
+    const devices = [];
+    for (const deviceId of deviceIds) {
+      const deviceRef = doc(db, 'devices', deviceId);
+      const deviceDoc = await getDoc(deviceRef);
+      if (deviceDoc.exists()) {
+        devices.push({ id: deviceDoc.id, ...deviceDoc.data() });
+      }
+    }
+    
+    return { success: true, devices };
   } catch (error) {
     return { success: false, error: error.message };
   }

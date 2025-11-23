@@ -25,7 +25,8 @@ import {
   addDevice,
   updateDevice,
   deleteDevice,
-  generateDriverId
+  generateDriverId,
+  getAdminDevices
 } from '../firebaseConfig';
 import { uploadToCloudinary } from '../cloudinaryConfig';
 
@@ -89,9 +90,13 @@ const Devices = () => {
   }, [showAddModal]);
 
   const fetchDevices = async () => {
-    const result = await getDevices();
+    // Fetch only devices belonging to current admin
+    const result = await getAdminDevices();
     if (result.success) {
       setDevices(result.devices);
+    } else {
+      console.error('Failed to fetch admin devices:', result.error);
+      setDevices([]);
     }
   };
 

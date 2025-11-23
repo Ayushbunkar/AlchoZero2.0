@@ -97,12 +97,20 @@ const Navbar = () => {
                 </button>
               </>
             ) : (
-              <Link
-                to="/dashboard"
-                className="px-6 py-2 text-sm font-semibold text-white bg-linear-to-r from-(--primary-blue) to-(--accent-blue) rounded-full hover:scale-105 transition-transform duration-300"
-              >
-                Login
-              </Link>
+              <div className="flex items-center space-x-4">
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="px-6 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-full hover:scale-105 transition-transform duration-300"
+                >
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
 
@@ -179,13 +187,22 @@ const Navbar = () => {
                   </button>
                 </>
               ) : (
-                <Link
-                  to="/dashboard"
-                  onClick={() => setIsOpen(false)}
-                  className="w-full px-6 py-2 text-sm font-semibold text-white bg-linear-to-r from-(--primary-blue) to-(--accent-blue) rounded-full hover:scale-105 transition-transform duration-300 text-center"
-                >
-                  Login
-                </Link>
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors text-left"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setIsOpen(false)}
+                    className="w-full px-6 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-full hover:scale-105 transition-transform duration-300 text-center"
+                  >
+                    Sign Up
+                  </Link>
+                </>
               )}
             </div>
           </motion.div>
