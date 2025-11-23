@@ -15,12 +15,6 @@ function AppContent() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user && window.location.pathname === '/') {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
-
   return (
     <Routes>
       {/* Public routes with Navbar and Footer */}
