@@ -78,24 +78,16 @@ const Navbar = () => {
             ))}
             
             {user ? (
-              <>
-                <Link
-                  to="/dashboard"
-                  className={`text-sm font-medium transition-all duration-300 ${
-                    isActive('/dashboard')
-                      ? 'text-(--primary-blue)'
-                      : 'text-gray-300 hover:text-(--primary-blue)'
-                  }`}
-                >
-                  Dashboard
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  Logout
-                </button>
-              </>
+              <Link
+                to="/dashboard"
+                className={`text-sm font-medium transition-all duration-300 ${
+                  isActive('/dashboard')
+                    ? 'text-(--primary-blue)'
+                    : 'text-gray-300 hover:text-(--primary-blue)'
+                }`}
+              >
+                Dashboard
+              </Link>
             ) : (
               <div className="flex items-center space-x-4">
                 <Link
@@ -164,28 +156,17 @@ const Navbar = () => {
               ))}
               
               {user ? (
-                <>
-                  <Link
-                    to="/dashboard"
-                    onClick={() => setIsOpen(false)}
-                    className={`text-sm font-medium transition-all duration-300 ${
-                      isActive('/dashboard')
-                        ? 'text-(--primary-blue)'
-                        : 'text-gray-300 hover:text-(--primary-blue)'
-                    }`}
-                  >
-                    Dashboard
-                  </Link>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsOpen(false);
-                    }}
-                    className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors text-left"
-                  >
-                    Logout
-                  </button>
-                </>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className={`text-sm font-medium transition-all duration-300 ${
+                    isActive('/dashboard')
+                      ? 'text-(--primary-blue)'
+                      : 'text-gray-300 hover:text-(--primary-blue)'
+                  }`}
+                >
+                  Dashboard
+                </Link>
               ) : (
                 <>
                   <Link

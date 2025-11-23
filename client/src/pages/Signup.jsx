@@ -69,7 +69,7 @@ const Signup = () => {
       if (result.success) {
         setSuccess(true);
         setTimeout(() => {
-          navigate('/login');
+          navigate('/dashboard');
         }, 2000);
       } else {
         setError(result.error || 'Signup failed. Please try again.');
