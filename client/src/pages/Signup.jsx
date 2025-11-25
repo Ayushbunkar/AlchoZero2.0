@@ -108,7 +108,7 @@ const Signup = () => {
               <User className="w-8 h-8 text-white" />
             </motion.div>
             <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
-            <p className="text-gray-400">Join AlchoZero to manage your devices</p>
+            <p className="text-gray-400">Join AlcoZero to manage your devices</p>
           </div>
 
           {/* Success Message */}

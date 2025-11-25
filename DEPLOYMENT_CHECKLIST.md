@@ -1,6 +1,6 @@
-# 🚀 AlchoZero Deployment Checklist
+# 🚀 AlcoZero Deployment Checklist
 
-Use this checklist to ensure successful deployment of your AlchoZero system.
+Use this checklist to ensure successful deployment of your AlcoZero system.
 
 ## 📋 Pre-Deployment
 
@@ -10,7 +10,7 @@ Use this checklist to ensure successful deployment of your AlchoZero system.
 - [ ] Authentication enabled (Email/Password)
 - [ ] Realtime Database created
 - [ ] Firestore Database created
-- [ ] Admin user created (`admin@alchozero.com`)
+- [ ] Admin user created (`admin@alcozero.com`)
 
 ### Local Environment
 - [ ] Node.js 18+ installed
@@ -93,7 +93,7 @@ firebase deploy --only hosting
 - [ ] Double-check all connections
 
 ### 3. Arduino Code
-- [ ] Open `hardware/AlchoZero_ESP32.ino`
+- [ ] Open `hardware/AlcoZero_ESP32.ino`
 - [ ] Update WiFi credentials
 - [ ] Update Firebase credentials
 - [ ] Update Device ID (if needed)
@@ -287,7 +287,7 @@ If emails not sending:
 - GitHub Issues: [Your Repo URL]
 
 **Emergency Contacts:**
-- Admin Email: admin@alchozero.com
+- Admin Email: admin@alcozero.com
 - Technical Lead: [Your Contact]
 
 ---
@@ -325,4 +325,4 @@ _______________________________________
 
 ✅ **Deployment Complete!** 🎉
 
-Your AlchoZero system is now live and protecting lives on the road!
+Your AlcoZero system is now live and protecting lives on the road!

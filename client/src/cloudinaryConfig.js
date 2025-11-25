@@ -30,7 +30,7 @@ export const uploadToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('folder', 'alchozero/drivers');
+    formData.append('folder', 'alcozero/drivers');
     
     // Using unsigned upload - no API key or signature required
     const response = await fetch(

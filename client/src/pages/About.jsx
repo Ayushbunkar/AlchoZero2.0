@@ -35,66 +35,66 @@ const About = () => {
 
   const team = [
     {
+      name: 'Aditya Singh Patel',
+      role: 'Project Leader',
+      photo: '/src/assets/images/adityapatel.png',
+      bio: 'Leads project management, coordination, and overall vision.'
+    },
+    {
       name: 'Ayush Bunkar',
-      role: 'Frontend & Backend Engineer',
+      role: 'Frontend Backend & AI/ML Engineer',
       photo: '/src/assets/images/ayush.png',
       bio: 'Owns system design, APIs, database models, and integrations.'
     },
     {
-      name: 'Riya',
-      role: 'Reachearch',
+      name: 'Riya Palod',
+      role: 'Researcher and UI/UX Designer',
       photo: '/src/assets/images/riya.jpg',
-      bio: 'Trains and optimizes detection models and inference flows.'
+      bio: 'Researcher and UI/UX designer creating intuitive, data-driven products.'
     },
     {
-      name: 'Aditya Patel',
-      role: 'Team Leader',
-      photo: '/src/assets/images/adityapatel.png',
-      bio: 'Builds responsive UI, dashboards, and real-time interactions.'
-    },
-    {
-      name: 'Aditya Rathore',
-      role: 'DevOps Engineer',
+      name: 'Aditya Singh Rathore',
+      role: 'Circuit Designer and hardware integrator',
       photo: '/src/assets/images/adityarathore.jpg',
-      bio: 'Automates CI/CD, deploys, and monitors production reliability.'
+      bio: 'Designs circuits, PCB layouts, and ensures hardware reliability.'
     },
     {
-      name: 'Priyanshu',
-      role: 'QA & Security',
+      name: 'Priyanshu Lohani',
+      role: 'App developer & AI/ML Engineer',
       photo: '/src/assets/images/priyanshu.png',
-      bio: 'Owns testing strategy, security checks, and re  lease quality.'
+      bio: 'Develops mobile app and implements AI algorithms for detection.'
     },
     {
-      name: 'Shikhar',
-      role: 'Device & Sensors',
+      name: 'Shikhar Mishra',
+      role: 'Hardware and Embedded Systems Engineer',
       photo: '/src/assets/images/shikhar.png',
-      bio: 'Integrates edge devices, telemetry, and calibration routines.'
+      bio: 'Programs microcontrollers and optimizes sensor integration.'
     },
   ];
 
 
-  const achievements = [
-    {
-      icon: '🏆',
-      title: 'SIH 2025 Finalist',
-      description: 'Selected as finalist in Smart India Hackathon 2025 for innovative safety solution'
-    },
-    {
-      icon: '🔬',
-      title: 'Patent Pending',
-      description: 'Proprietary AI algorithms and IoT integration methods under patent protection'
-    },
-    {
-      icon: '🌟',
-      title: 'Industry Recognition',
-      description: 'Featured in automotive safety publications and industry conferences'
-    },
-    {
-      icon: '📈',
-      title: 'Growing Adoption',
-      description: 'Deployed in 50+ vehicles across pilot programs with 99.9% success rate'
-    },
-  ];
+  // const achievements = [
+  //   {
+  //     icon: '🏆',
+  //     title: 'SIH 2025 Finalist',
+  //     description: 'Selected as finalist in Smart India Hackathon 2025 for innovative safety solution'
+  //   },
+  //   {
+  //     icon: '🔬',
+  //     title: 'Patent Pending',
+  //     description: 'Proprietary AI algorithms and IoT integration methods under patent protection'
+  //   },
+  //   {
+  //     icon: '🌟',
+  //     title: 'Industry Recognition',
+  //     description: 'Featured in automotive safety publications and industry conferences'
+  //   },
+  //   {
+  //     icon: '📈',
+  //     title: 'Growing Adoption',
+  //     description: 'Deployed in 50+ vehicles across pilot programs with 99.9% success rate'
+  //   },
+  // ];
 
   const highlights = [
     {
@@ -105,7 +105,7 @@ const About = () => {
     {
       icon: '🔒',
       title: 'Secure & Reliable',
-      description: 'End-to-end encryption with 99.9% uptime and fail-safe mechanisms'
+      description: 'End-to-end encryption and privacy protection'
     },
     {
       icon: '📊',
@@ -144,26 +144,16 @@ const About = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="inline-block mb-6"
         >
-            <img src={logo} alt="AlchoZero Logo" className="h-16 w-16" />
+          <img src={logo} alt="AlcoZero Logo" className="h-35 w-35" />
         </motion.div>
         <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
-          About <span className="text-(--primary-blue)">AlchoZero</span>
+          About <span className="text-(--primary-blue)">AlcoZero</span>
         </h1>
         <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-8">
           Revolutionizing vehicle safety through intelligent alcohol detection technology.
           Our AI-powered system prevents drunk driving accidents before they happen.
         </p>
-        <div className="flex flex-wrap justify-center gap-4 text-sm">
-          <span className="px-4 py-2 bg-(--primary-blue)/10 text-(--primary-blue) rounded-full border border-(--primary-blue)/20">
-            🚀 SIH 2025 Finalist
-          </span>
-          <span className="px-4 py-2 bg-(--success-green)/10 text-(--success-green) rounded-full border border-(--success-green)/20">
-            ⚡ &lt; 500ms Detection
-          </span>
-          <span className="px-4 py-2 bg-(--accent-blue)/10 text-(--accent-blue) rounded-full border border-(--accent-blue)/20">
-            🎯 99.9% Accuracy
-          </span>
-        </div>
+
       </motion.div>
 
       {/* Mission Statement */}
@@ -203,10 +193,6 @@ const About = () => {
             </p>
             <div className="space-y-3">
               <div className="flex items-center">
-                <span className="text-(--success-green) mr-3">🎯</span>
-                <span className="text-gray-300">Zero drunk driving fatalities by 2030</span>
-              </div>
-              <div className="flex items-center">
                 <span className="text-(--success-green) mr-3">🌍</span>
                 <span className="text-gray-300">Global standard for vehicle safety</span>
               </div>
@@ -216,20 +202,7 @@ const About = () => {
               </div>
             </div>
           </div>
-          <div className="space-y-6">
-            <div className="text-center p-6 bg-linear-to-r from-(--primary-blue)/10 to-(--accent-blue)/10 rounded-xl border border-(--primary-blue)/20">
-              <div className="text-4xl font-bold text-(--primary-blue) mb-2">2030</div>
-              <div className="text-gray-300">Zero Fatalities Goal</div>
-            </div>
-            <div className="text-center p-6 bg-linear-to-r from-(--success-green)/10 to-(--primary-blue)/10 rounded-xl border border-(--success-green)/20">
-              <div className="text-4xl font-bold text-(--success-green) mb-2">100M+</div>
-              <div className="text-gray-300">Lives Protected</div>
-            </div>
-            <div className="text-center p-6 bg-linear-to-r from-(--accent-blue)/10 to-(--primary-blue)/10 rounded-xl border border-(--accent-blue)/20">
-              <div className="text-4xl font-bold text-(--accent-blue) mb-2">50+</div>
-              <div className="text-gray-300">Countries Deployed</div>
-            </div>
-          </div>
+
         </div>
       </motion.div>
 
@@ -245,9 +218,7 @@ const About = () => {
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
             The <span className="text-red-400">Critical</span> Problem
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Every 52 seconds, someone dies in a drunk driving accident worldwide
-          </p>
+
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -294,7 +265,7 @@ const About = () => {
           </div>
 
           <div className="glass-card p-8">
-            <h3 className="text-2xl font-bold text-(--success-green) mb-6">AlchoZero's Solution</h3>
+            <h3 className="text-2xl font-bold text-(--success-green) mb-6">AlcoZero's Solution</h3>
             <div className="space-y-4">
               {[
                 'Automated detection without human intervention',
@@ -321,48 +292,7 @@ const About = () => {
       </motion.div>
 
       {/* How It Works Timeline */}
-      <div className="max-w-7xl mx-auto mb-20">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h2 className="section-title mb-4">System Workflow</h2>
-          <p className="text-gray-400 text-lg">
-            Understanding the complete detection and prevention process
-          </p>
-        </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {timeline.map((phase, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.2 }}
-              className="glass-card p-8"
-            >
-              <div className="flex items-center mb-6">
-                <div className="w-12 h-12 rounded-full bg-linear-to-r from-(--primary-blue) to-(--accent-blue) flex items-center justify-center text-2xl font-bold mr-4 text-white">
-                  {index + 1}
-                </div>
-                <h3 className="text-2xl font-bold text-white">{phase.phase}</h3>
-              </div>
-              <ul className="space-y-3">
-                {phase.steps.map((step, stepIndex) => (
-                  <li key={stepIndex} className="flex items-start">
-                    <span className="text-(--primary-blue) mr-3 mt-1">▸</span>
-                    <span className="text-gray-300">{step}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-        </div>
-      </div>
 
       {/* Feature Highlights */}
       <div className="max-w-7xl mx-auto mb-20">
@@ -375,7 +305,7 @@ const About = () => {
         >
           <h2 className="section-title mb-4">System Highlights</h2>
           <p className="text-gray-400 text-lg">
-            What makes AlchoZero the best choice for vehicle safety
+            What makes AlcoZero the best choice for vehicle safety
           </p>
         </motion.div>
 
@@ -403,127 +333,10 @@ const About = () => {
       </div>
 
       {/* Technical Stack */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto mb-20"
-      >
-        <div className="glass-card p-12">
-          <h2 className="text-3xl font-bold text-center text-(--primary-blue) mb-12">
-            Technology Stack
-          </h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                <span className="mr-3">🔧</span> Hardware
-              </h3>
-              <ul className="space-y-2 text-gray-300">
-                <li className="flex items-center">
-                  <span className="text-(--primary-blue) mr-2">•</span> MQ-3 Alcohol Sensor
-                </li>
-                <li className="flex items-center">
-                  <span className="text-(--primary-blue) mr-2">•</span> ESP32/NodeMCU Microcontroller
-                </li>
-                <li className="flex items-center">
-                  <span className="text-(--primary-blue) mr-2">•</span> 5V Relay Module
-                </li>
-                <li className="flex items-center">
-                  <span className="text-(--primary-blue) mr-2">•</span> LED Indicators
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-4 flex items-center">
-                <span className="mr-3">💻</span> Software
-              </h3>
-              <ul className="space-y-2 text-gray-300">
-                <li className="flex items-center">
-                  <span className="text-(--primary-blue) mr-2">•</span> React + Tailwind CSS
-                </li>
-                <li className="flex items-center">
-                  <span className="text-(--primary-blue) mr-2">•</span> Firebase Authentication
-                </li>
-                <li className="flex items-center">
-                  <span className="text-(--primary-blue) mr-2">•</span> Firebase Realtime Database
-                </li>
-                <li className="flex items-center">
-                  <span className="text-(--primary-blue) mr-2">•</span> Firebase Cloud Functions
-                </li>
-                <li className="flex items-center">
-                  <span className="text-(--primary-blue) mr-2">•</span> Firestore Database
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </motion.div>
 
       {/* Stats Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto mb-20"
-      >
-        <div className="grid md:grid-cols-4 gap-6">
-          {[
-            { value: '0.03%', label: 'BAC Threshold' },
-            { value: '< 500ms', label: 'Detection Time' },
-            { value: '99.9%', label: 'Uptime' },
-            { value: 'Unlimited', label: 'Devices Supported' },
-          ].map((stat, index) => (
-            <div
-              key={index}
-              className="glass-card p-8 text-center hover:scale-105 transition-transform duration-300"
-            >
-              <div className="text-4xl font-bold text-(--primary-blue) mb-2">
-                {stat.value}
-              </div>
-              <div className="text-gray-400">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
 
       {/* Achievements Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto mb-20"
-      >
-        <div className="text-center mb-16">
-          <h2 className="section-title mb-4">Achievements & Recognition</h2>
-          <p className="text-gray-400 text-lg">
-            Milestones and recognition in our journey to revolutionize vehicle safety
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {achievements.map((achievement, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="glass-card p-6 text-center hover:scale-105 transition-transform duration-300"
-            >
-              <div className="text-5xl mb-4">{achievement.icon}</div>
-              <h3 className="text-lg font-bold text-white mb-2">
-                {achievement.title}
-              </h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                {achievement.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
 
       {/* Team Section */}
       <motion.div
@@ -626,11 +439,10 @@ const About = () => {
                   <div className="glass-card p-6">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-xl font-bold text-white">{phase.phase}</h3>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        phase.status === 'Completed' ? 'bg-(--success-green)/20 text-(--success-green)' :
-                        phase.status === 'In Progress' ? 'bg-(--primary-blue)/20 text-(--primary-blue)' :
-                        'bg-gray-600/20 text-gray-400'
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${phase.status === 'Completed' ? 'bg-(--success-green)/20 text-(--success-green)' :
+                          phase.status === 'In Progress' ? 'bg-(--primary-blue)/20 text-(--primary-blue)' :
+                            'bg-gray-600/20 text-gray-400'
+                        }`}>
                         {phase.status}
                       </span>
                     </div>
@@ -686,7 +498,7 @@ const About = () => {
 
             <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               Join the revolution in automotive safety. Whether you're a fleet operator, automotive manufacturer,
-              or safety-conscious organization, AlchoZero provides the technology to prevent drunk driving accidents
+              or safety-conscious organization, AlcoZero provides the technology to prevent drunk driving accidents
               and save lives.
             </p>
 
@@ -723,25 +535,14 @@ const About = () => {
             </div>
 
             <p className="text-sm text-gray-500 mt-6">
-              Join 500+ organizations already protecting lives with AlchoZero
+              Join 500+ organizations already protecting lives with AlcoZero
             </p>
           </div>
         </div>
       </motion.div>
 
       {/* Footer Quote */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1 }}
-        className="max-w-4xl mx-auto text-center"
-      >
-        <blockquote className="text-2xl md:text-3xl font-light text-gray-300 italic mb-4">
-          "The best way to predict the future is to create it."
-        </blockquote>
-        <cite className="text-(--primary-blue) font-medium">- AlchoZero Team</cite>
-      </motion.div>
+
     </div>
   );
 };

@@ -342,7 +342,7 @@ const Dashboard = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 bg-dark-bg border border-white/20 rounded-lg text-white focus:outline-none focus:border-neon-blue transition-colors"
-                placeholder="admin@alchozero.com"
+                placeholder="admin@alcozero.com"
                 required
               />
             </div>
@@ -377,7 +377,7 @@ const Dashboard = () => {
           <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
             <p className="text-sm text-gray-400 text-center">
               <strong>Demo Credentials:</strong><br />
-              Email: admin@alchozero.com<br />
+              Email: admin@alcozero.com<br />
               Password: Admin@123
             </p>
           </div>

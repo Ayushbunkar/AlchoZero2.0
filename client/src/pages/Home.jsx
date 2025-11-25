@@ -30,14 +30,14 @@ const Home = () => {
           <GradientGlow />
           <Hero
             title="Smart Safety with"
-            highlight="AlchoZero"
+            highlight="AlcoZero"
             subtitle="Prevent drunk driving before it happens — detect impairment and disable ignition."
             primaryAction="Go to Dashboard"
             secondaryAction="Learn More"
             onPrimary={goToDashboard}
             onSecondary={() => navigate('/about')}
             imageSrc={homeHero}
-            imageAlt="Illustration for AlchoZero home hero"
+            imageAlt="Illustration for AlcoZero home hero"
           />
           <MotionInView>
             <StatsStrip

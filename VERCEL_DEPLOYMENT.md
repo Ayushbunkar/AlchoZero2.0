@@ -1,4 +1,4 @@
-# Vercel Deployment Guide for AlchoZero
+# Vercel Deployment Guide for AlcoZero
 
 ## 🚀 Deployment Steps
 
@@ -12,7 +12,7 @@ git push origin main
 ### 2. **Import Project to Vercel**
 1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
 2. Click "Add New" → "Project"
-3. Import your GitHub repository: `Ayushbunkar/AlchoZero2.0`
+3. Import your GitHub repository: `Ayushbunkar/AlcoZero2.0`
 4. Select the repository and click "Import"
 
 ### 3. **Configure Project Settings**
@@ -33,7 +33,7 @@ In Vercel project settings, add these environment variables:
 #### Cloudinary Variables
 ```
 VITE_CLOUDINARY_CLOUD_NAME=dx7ztr9i3
-VITE_CLOUDINARY_UPLOAD_PRESET=alchozero_drivers
+VITE_CLOUDINARY_UPLOAD_PRESET=alcozero_drivers
 ```
 
 #### Firebase Variables

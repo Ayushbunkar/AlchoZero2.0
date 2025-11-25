@@ -31,7 +31,7 @@ Your Firebase project: **fftour-5ac79**
 
 **Deploy Security Rules** (after database is created):
 ```bash
-cd "d:\Yash Coding\sih final\Alchozero2.0"
+cd "d:\Yash Coding\sih final\Alcozero2.0"
 firebase deploy --only database
 ```
 
@@ -47,7 +47,7 @@ firebase deploy --only database
 
 **Deploy Security Rules & Indexes** (after Firestore is created):
 ```bash
-cd "d:\Yash Coding\sih final\Alchozero2.0"
+cd "d:\Yash Coding\sih final\Alcozero2.0"
 firebase deploy --only firestore
 ```
 
@@ -60,7 +60,7 @@ firebase deploy --only firestore
 1. **Open Authentication**: https://console.firebase.google.com/project/fftour-5ac79/authentication/users
 2. Click **"Add user"**
 3. Enter:
-   - **Email**: `admin@alchozero.com`
+   - **Email**: `admin@alcozero.com`
    - **Password**: `Admin@123` (or your secure password)
 4. Click **"Add user"**
 5. **Copy the User UID** (you'll need this)
@@ -82,7 +82,7 @@ firebase login
 After completing Steps 1-4, deploy everything:
 
 ```bash
-cd "d:\Yash Coding\sih final\Alchozero2.0"
+cd "d:\Yash Coding\sih final\Alcozero2.0"
 
 # Login to Firebase (browser will open)
 firebase login
@@ -109,7 +109,7 @@ firebase deploy --only storage
 
 1. **Test Authentication**:
    - Go to: http://localhost:5174/dashboard
-   - Login with: `admin@alchozero.com` / `Admin@123`
+   - Login with: `admin@alcozero.com` / `Admin@123`
 
 2. **Test Realtime Database**:
    - Dashboard should show live device data
@@ -146,7 +146,7 @@ This deploys:
 - [ ] Authentication enabled (Email/Password)
 - [ ] Realtime Database created
 - [ ] Firestore Database created
-- [ ] Admin user created (`admin@alchozero.com`)
+- [ ] Admin user created (`admin@alcozero.com`)
 - [ ] Database rules deployed
 - [ ] Firestore rules deployed
 - [ ] Cloud Functions deployed

@@ -11,7 +11,7 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <h3 className="text-2xl font-bold bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent mb-4">
-              🚗 AlchoZero
+              🚗 AlcoZero
             </h3>
             <p className="text-gray-400 mb-4 max-w-md">
               AlchoZero is an advanced alcohol detection system that automatically locks the engine 
@@ -112,7 +112,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © {currentYear} AlchoZero. All rights reserved.
+              © {currentYear} AlcoZero. All rights reserved.
             </p>
             <p className="text-gray-400 text-sm mt-4 md:mt-0">
               Made with ❤️ for Safer Roads

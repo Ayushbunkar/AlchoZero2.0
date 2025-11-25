@@ -164,8 +164,8 @@ exports.onEngineStatusChange = functions.database
  */
 async function sendEmailAlert(deviceId, alcoholLevel) {
   const mailOptions = {
-    from: 'AlchoZero Alert <your-email@gmail.com>',
-    to: 'admin@alchozero.com', // Replace with actual admin email
+    from: 'AlcoZero Alert <your-email@gmail.com>',
+    to: 'admin@alcozero.com', // Replace with actual admin email
     subject: `🚨 ALERT: High Alcohol Level Detected - ${deviceId}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
@@ -206,8 +206,8 @@ async function sendEmailAlert(deviceId, alcoholLevel) {
         </div>
         
         <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
-          <p>This is an automated message from AlchoZero Alcohol Detection System</p>
-          <p>© 2025 AlchoZero. All rights reserved.</p>
+          <p>This is an automated message from AlcoZero Alcohol Detection System</p>
+          <p>© 2025 AlcoZero. All rights reserved.</p>
         </div>
       </div>
     `,
@@ -228,8 +228,8 @@ async function sendEmailAlert(deviceId, alcoholLevel) {
  */
 async function sendEngineLockNotification(deviceId) {
   const mailOptions = {
-    from: 'AlchoZero System <your-email@gmail.com>',
-    to: 'admin@alchozero.com',
+    from: 'AlcoZero System <your-email@gmail.com>',
+    to: 'admin@alcozero.com',
     subject: `🔒 Engine Locked - ${deviceId}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">

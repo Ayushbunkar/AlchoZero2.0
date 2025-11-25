@@ -1,15 +1,15 @@
-# 📦 AlchoZero - Project Summary
+# 📦 AlcoZero - Project Summary
 
 ## ✅ Project Completed Successfully!
 
-This document summarizes everything that has been created for the AlchoZero Alcohol Detection System.
+This document summarizes everything that has been created for the AlcoZero Alcohol Detection System.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-Alchozero2.0/
+Alcozero2.0/
 ├── client/                          # React Frontend Application
 │   ├── src/
 │   │   ├── components/
@@ -36,7 +36,7 @@ Alchozero2.0/
 │   └── package.json                 ✅ Function dependencies
 │
 ├── hardware/                        # ESP32 Arduino Code
-│   └── AlchoZero_ESP32.ino          ✅ Complete ESP32 code
+│   └── AlcoZero_ESP32.ino          ✅ Complete ESP32 code
 │
 ├── firebase.json                    ✅ Firebase project config
 ├── firestore.rules                  ✅ Firestore security
@@ -553,7 +553,7 @@ This project demonstrates:
 ## 📝 Notes
 
 **Default Admin Credentials:**
-- Email: `admin@alchozero.com`
+- Email: `admin@alcozero.com`
 - Password: `Admin@123`
 
 **Default Device ID:**
@@ -568,7 +568,7 @@ This project demonstrates:
 
 **🎊 CONGRATULATIONS! 🎊**
 
-**Your AlchoZero system is ready to deploy!**
+**Your AlcoZero system is ready to deploy!**
 
 Made with ❤️ for Safer Roads
 

@@ -237,7 +237,7 @@ const Devices = () => {
                 Device Management
               </h1>
               <p className="text-gray-400">
-                Monitor and manage all connected AlchoZero devices
+                Monitor and manage all connected AlcoZero devices
               </p>
             </div>
             <button

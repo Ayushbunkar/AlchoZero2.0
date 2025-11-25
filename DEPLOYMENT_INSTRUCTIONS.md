@@ -41,9 +41,9 @@ You need to create an unsigned upload preset in your Cloudinary dashboard:
 3. Scroll to **Upload presets** section
 4. Click **Add upload preset**
 5. Configure the preset:
-   - **Preset name**: `alchozero_drivers` (or any name you prefer)
+   - **Preset name**: `alcozero_drivers` (or any name you prefer)
    - **Signing Mode**: **Unsigned** ⚠️ Important!
-   - **Folder**: `alchozero/drivers` (optional but recommended)
+   - **Folder**: `alcozero/drivers` (optional but recommended)
    - **Allowed formats**: jpg, png, jpeg, gif, webp
    - **Access mode**: public
    - Click **Save**
@@ -116,7 +116,7 @@ npm run dev
 ```env
 # Cloudinary
 VITE_CLOUDINARY_CLOUD_NAME=dx7ztr9i3
-VITE_CLOUDINARY_UPLOAD_PRESET=alchozero_drivers  # Must match your Cloudinary preset
+VITE_CLOUDINARY_UPLOAD_PRESET=alcozero_drivers  # Must match your Cloudinary preset
 
 # Firebase
 VITE_FIREBASE_API_KEY=your_api_key

@@ -19,7 +19,7 @@ firebase deploy --only firestore:rules
 
 **Test Credentials:**
 ```
-Email: admin@alchozero.com
+Email: admin@alcozero.com
 Password: Admin@123
 ```
 
@@ -191,7 +191,7 @@ firebase deploy --only firestore:rules
 ### Issue: "Upload preset not found" (Cloudinary)
 **Solution**: Create unsigned upload preset in Cloudinary dashboard
 1. Go to Settings > Upload
-2. Create preset named: `alchozero_drivers`
+2. Create preset named: `alcozero_drivers`
 3. Set to "Unsigned" mode
 
 ### Issue: Devices not showing

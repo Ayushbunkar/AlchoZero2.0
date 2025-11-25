@@ -66,8 +66,8 @@ const Contact = () => {
     {
       icon: '📧',
       title: 'Email',
-      value: 'support@alchozero.com',
-      link: 'mailto:support@alchozero.com',
+      value: 'support@alcozero.com',
+      link: 'mailto:support@alcozero.com',
     },
     {
       icon: '📞',
@@ -100,7 +100,7 @@ const Contact = () => {
       >
         <h1 className="section-title mb-6">Get In Touch</h1>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-          Have questions about AlchoZero? We're here to help. Send us a message 
+          Have questions about AlcoZero? We're here to help. Send us a message 
           and we'll respond as soon as possible.
         </p>
       </motion.div>

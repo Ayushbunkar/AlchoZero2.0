@@ -20,9 +20,9 @@ Go to: https://console.cloudinary.com/
 2. Fill in the form:
 
    **Basic Settings:**
-   - **Upload preset name**: `alchozero_drivers`
+   - **Upload preset name**: `alcozero_drivers`
    - **Signing Mode**: ⚠️ **UNSIGNED** (This is critical!)
-   - **Folder**: `alchozero/drivers` (optional but recommended)
+   - **Folder**: `alcozero/drivers` (optional but recommended)
    
    **Advanced Settings (Optional but recommended):**
    - **Use filename or externally defined Public ID**: Leave unchecked or check if you want to preserve filenames
@@ -41,7 +41,7 @@ After creating the preset, update your `.env` file:
 
 ```env
 VITE_CLOUDINARY_CLOUD_NAME=dx7ztr9i3
-VITE_CLOUDINARY_UPLOAD_PRESET=alchozero_drivers
+VITE_CLOUDINARY_UPLOAD_PRESET=alcozero_drivers
 ```
 
 ### Step 5: Restart Dev Server
@@ -111,7 +111,7 @@ Your Cloudinary upload preset form should look like this:
 
 ```
 ┌─────────────────────────────────────────┐
-│ Upload preset name: alchozero_drivers   │
+│ Upload preset name: alcozero_drivers   │
 │ Signing Mode: ○ Signed ● Unsigned       │
 │ Folder: alchozero/drivers               │
 │ Unique filename: ☑                      │
@@ -131,7 +131,7 @@ cd client
 npm run dev
 ```
 
-If `unsigned_default` doesn't work, create `alchozero_drivers` preset and update `.env`:
+If `unsigned_default` doesn't work, create `alcozero_drivers` preset and update `.env`:
 ```bash
 # After creating preset in Cloudinary dashboard
 # Update VITE_CLOUDINARY_UPLOAD_PRESET in .env file

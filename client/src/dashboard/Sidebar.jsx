@@ -117,7 +117,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               <Shield className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">AlchoZero</h2>
+              <h2 className="text-lg font-bold text-white">AlcoZero</h2>
               <p className="text-xs text-gray-400">Admin Panel</p>
             </div>
           </div>

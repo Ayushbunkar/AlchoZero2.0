@@ -1,6 +1,6 @@
-# 🚀 Quick Start Guide - AlchoZero
+# 🚀 Quick Start Guide - AlcoZero
 
-Get AlchoZero up and running in 10 minutes!
+Get AlcoZero up and running in 10 minutes!
 
 ## 📋 Checklist
 
@@ -16,8 +16,8 @@ Get AlchoZero up and running in 10 minutes!
 ### 1️⃣ Clone & Install
 
 ```bash
-git clone https://github.com/your-username/alchozero.git
-cd alchozero/client
+git clone https://github.com/your-username/alcozero.git
+cd alcozero/client
 npm install
 ```
 
@@ -48,7 +48,7 @@ const firebaseConfig = {
 In Firebase Console:
 1. Go to Authentication > Users
 2. Add user:
-   - Email: `admin@alchozero.com`
+   - Email: `admin@alcozero.com`
    - Password: `Admin@123`
 
 ### 4️⃣ Run Development Server
@@ -162,7 +162,7 @@ Buzzer -> GPIO 14
 1. Install Arduino IDE
 2. Install ESP32 board support
 3. Install "Firebase ESP Client" library
-4. Open `hardware/AlchoZero_ESP32.ino`
+4. Open `hardware/AlcoZero_ESP32.ino`
 5. Update WiFi and Firebase credentials
 6. Upload to ESP32
 
@@ -218,7 +218,7 @@ Want to test without hardware? Use Firebase Console to simulate device data:
 ## 📝 Default Credentials
 
 **Admin Login:**
-- Email: `admin@alchozero.com`
+- Email: `admin@alcozero.com`
 - Password: `Admin@123`
 
 **Device ID:**
@@ -273,7 +273,7 @@ npm run build
 
 ## 💬 Need Help?
 
-- 📧 Email: support@alchozero.com
+- 📧 Email: support@alcozero.com
 - 🐛 Issues: GitHub Issues page
 - 💬 Discord: [Join our server]
 - 📖 Docs: README.md

@@ -120,17 +120,17 @@ const Features = () => {
     },
     {
       title: 'Scalable Architecture',
-      description: 'Firebase backend supports unlimited devices and users',
+      description: 'Firebase backend support devices and users',
       icon: '📈',
     },
     {
       title: 'Cost Effective',
-      description: 'Affordable hardware with free-tier Firebase usage',
+      description: 'Affordable hardware and minimal maintenance costs',
       icon: '💰',
     },
     {
       title: 'Easy Maintenance',
-      description: 'Remote diagnostics and OTA updates reduce maintenance',
+      description: 'Remote diagnostics and updates reduce maintenance',
       icon: '🔧',
     },
     {
@@ -151,7 +151,7 @@ const Features = () => {
       >
         <h1 className="section-title mb-6">Comprehensive Features</h1>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-          Explore the powerful features that make AlchoZero the most advanced 
+          Explore the powerful features that make AlcoZero the most advanced 
           alcohol detection system for vehicles
         </p>
       </motion.div>
@@ -241,7 +241,7 @@ const Features = () => {
         >
           <h2 className="section-title mb-4">Key Advantages</h2>
           <p className="text-gray-400 text-lg">
-            Why choose AlchoZero over traditional solutions
+            Why choose AlcoZero over traditional solutions
           </p>
         </motion.div>
 
@@ -283,7 +283,7 @@ const Features = () => {
           <div className="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-4">
             {[
               { label: 'MQ-3 Sensor', icon: '🔬' },
-              { label: 'ESP32', icon: '💻' },
+              { label: 'Raspberry Pi 5', icon: '💻' },
               { label: 'Firebase', icon: '☁️' },
               { label: 'Dashboard', icon: '📊' },
               { label: 'Admin', icon: '👤' },

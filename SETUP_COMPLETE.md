@@ -199,7 +199,7 @@ deviceStatus/
 
 2. **Login to dashboard:**
    ```
-   Email: admin@alchozero.com
+   Email: admin@alcozero.com
    Password: Admin@123
    ```
 
@@ -404,7 +404,7 @@ All data properly organized in Firestore:
 3. ✅ **Sample Data Script** - Easy data seeding
 4. ✅ **Firebase Console** - Monitoring instructions provided
 
-**Your AlchoZero dashboard is now fully integrated with Firebase and ready for use!** 🎉
+**Your AlcoZero dashboard is now fully integrated with Firebase and ready for use!** 🎉
 
 ### Quick Commands to Get Started:
 ```javascript

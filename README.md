@@ -1,8 +1,8 @@
-# 🚗 AlchoZero - Alcohol Detection System
+# 🚗 AlcoZero - Alcohol Detection System
 
 <div align="center">
 
-![AlchoZero Logo](https://img.shields.io/badge/AlchoZero-Drive%20Safe-00f3ff?style=for-the-badge)
+![AlcoZero Logo](https://img.shields.io/badge/AlcoZero-Drive%20Safe-00f3ff?style=for-the-badge)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
@@ -37,7 +37,7 @@
 
 ## 🎯 Overview
 
-AlchoZero is a comprehensive alcohol detection and prevention system designed for vehicles. It combines:
+AlcoZero is a comprehensive alcohol detection and prevention system designed for vehicles. It combines:
 
 - **MQ-3 Sensor** - Detects breath alcohol content (BAC)
 - **ESP32 Microcontroller** - Processes sensor data and controls engine relay
@@ -117,7 +117,7 @@ AlchoZero is a comprehensive alcohol detection and prevention system designed fo
 ## 📁 Project Structure
 
 ```
-Alchozero2.0/
+Alcozero2.0/
 ├── client/                      # React Frontend
 │   ├── public/
 │   ├── src/
@@ -144,7 +144,7 @@ Alchozero2.0/
 │   └── package.json
 │
 ├── hardware/                    # ESP32 Arduino Code
-│   └── AlchoZero_ESP32.ino
+│   └── AlcoZero_ESP32.ino
 │
 ├── firebase.json               # Firebase configuration
 ├── firestore.rules             # Firestore security rules
@@ -192,7 +192,7 @@ Before you begin, ensure you have the following installed:
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/alchozero.git
+git clone https://github.com/your-username/alcozero.git
 cd alchozero
 ```
 
@@ -204,7 +204,7 @@ cd alchozero
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
 2. Click **"Add Project"**
-3. Enter project name: `AlchoZero`
+3. Enter project name: `AlcoZero`
 4. Enable Google Analytics (optional)
 5. Click **"Create Project"**
 
@@ -214,7 +214,7 @@ cd alchozero
 1. Go to **Authentication** > **Sign-in method**
 2. Enable **Email/Password**
 3. Create admin user:
-   - Email: `admin@alchozero.com`
+   - Email: `admin@alcozero.com`
    - Password: `Admin@123`
 
 #### Realtime Database
@@ -237,7 +237,7 @@ cd alchozero
 
 1. Go to **Project Settings** > **General**
 2. Scroll to **Your apps** > Click **Web** icon (</>)
-3. Register app name: `AlchoZero Web`
+3. Register app name: `AlcoZero Web`
 4. Copy the configuration object:
 
 ```javascript
@@ -387,7 +387,7 @@ firebase deploy --only functions
 
 ### 4️⃣ Configure Arduino Code
 
-Edit `hardware/AlchoZero_ESP32.ino`:
+Edit `hardware/AlcoZero_ESP32.ino`:
 
 ```cpp
 // WiFi credentials
@@ -442,7 +442,7 @@ Select:
 - ✅ Firestore
 - ✅ Realtime Database
 
-Choose existing project: **AlchoZero**
+Choose existing project: **AlcoZero**
 
 ### 3️⃣ Build Frontend
 
@@ -479,7 +479,7 @@ https://your-project-id.web.app
 
 1. Navigate to `/dashboard`
 2. Login with credentials:
-   - **Email**: `admin@alchozero.com`
+   - **Email**: `admin@alcozero.com`
    - **Password**: `Admin@123`
 
 ### Dashboard Features
@@ -658,7 +658,7 @@ colors: {
 
 ### Adjust Alcohol Threshold
 
-Edit `hardware/AlchoZero_ESP32.ino`:
+Edit `hardware/AlcoZero_ESP32.ino`:
 
 ```cpp
 #define ALCOHOL_THRESHOLD 0.03  // Change threshold value
@@ -713,9 +713,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For support or inquiries:
 
-- **Email**: support@alchozero.com
-- **Website**: https://alchozero.com
-- **GitHub**: https://github.com/your-username/alchozero
+- **Email**: support@alcozero.com
+- **Website**: https://alcozero.com
+- **GitHub**: https://github.com/your-username/alcozero
 
 ---
 

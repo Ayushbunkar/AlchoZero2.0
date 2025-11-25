@@ -21,9 +21,9 @@ From your Cloudinary Dashboard, you'll need:
 2. Scroll down to **Upload presets**
 3. Click **Add upload preset**
 4. Configure the preset:
-   - **Preset name**: Choose a name (e.g., `alchozero_driver_photos`)
+   - **Preset name**: Choose a name (e.g., `alcozero_driver_photos`)
    - **Signing mode**: Select **Unsigned** (for client-side uploads)
-   - **Folder**: Enter a folder name (e.g., `alchozero/drivers`)
+   - **Folder**: Enter a folder name (e.g., `alcozero/drivers`)
    - **Allowed formats**: jpg, png, webp
    - **Max file size**: 5 MB
    - **Transformation**: Optional (you can add automatic transformations)
@@ -69,7 +69,7 @@ If you prefer using Firebase Storage instead of Cloudinary:
   driverId: "DRV-2025-0001",
   driverName: "John Doe",
   driverAge: 35,
-  driverPhoto: "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/alchozero/drivers/abc123.jpg",
+  driverPhoto: "https://res.cloudinary.com/your-cloud/image/upload/v1234567890/alcozero/drivers/abc123.jpg",
   licenseNo: "DL-1234567890",
   vehicleName: "Toyota Camry",
   vehicleNumber: "ABC-1234",
