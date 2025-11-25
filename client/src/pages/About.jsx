@@ -37,37 +37,37 @@ const About = () => {
     {
       name: 'Aditya Singh Patel',
       role: 'Project Leader',
-      photo: '/src/assets/images/adityapatel.png',
+      photo: '/images/adityapatel.png',
       bio: 'Leads project management, coordination, and overall vision.'
     },
     {
       name: 'Ayush Bunkar',
       role: 'Frontend Backend & AI/ML Engineer',
-      photo: '/src/assets/images/ayush.png',
+      photo: '/images/ayush.png',
       bio: 'Owns system design, APIs, database models, and integrations.'
     },
     {
       name: 'Riya Palod',
       role: 'Researcher and UI/UX Designer',
-      photo: '/src/assets/images/riya.jpg',
+      photo: '/images/riya.jpg',
       bio: 'Researcher and UI/UX designer creating intuitive, data-driven products.'
     },
     {
       name: 'Aditya Singh Rathore',
       role: 'Circuit Designer and hardware integrator',
-      photo: '/src/assets/images/adityarathore.jpg',
+      photo: '/images/adityarathore.jpg',
       bio: 'Designs circuits, PCB layouts, and ensures hardware reliability.'
     },
     {
       name: 'Priyanshu Lohani',
       role: 'App developer & AI/ML Engineer',
-      photo: '/src/assets/images/priyanshu.png',
+      photo: '/images/priyanshu.png',
       bio: 'Develops mobile app and implements AI algorithms for detection.'
     },
     {
       name: 'Shikhar Mishra',
       role: 'Hardware and Embedded Systems Engineer',
-      photo: '/src/assets/images/shikhar.png',
+      photo: '/images/shikhar.png',
       bio: 'Programs microcontrollers and optimizes sensor integration.'
     },
   ];
