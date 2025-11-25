@@ -36,38 +36,38 @@ const About = () => {
   const team = [
     {
       name: 'Ayush Bunkar',
-      role: 'Project Lead & Backend',
-      photo: 'https://i.pravatar.cc/240?img=12',
+      role: 'Frontend & Backend Engineer',
+      photo: '/src/assets/images/ayush.png',
       bio: 'Owns system design, APIs, database models, and integrations.'
     },
     {
-      name: 'Yash',
-      role: 'Frontend Engineer',
-      photo: 'https://i.pravatar.cc/240?img=32',
-      bio: 'Builds responsive UI, dashboards, and real-time interactions.'
-    },
-    {
       name: 'Riya',
-      role: 'ML/AI Engineer',
-      photo: 'https://i.pravatar.cc/240?img=15',
+      role: 'Reachearch',
+      photo: '/src/assets/images/riya.jpg',
       bio: 'Trains and optimizes detection models and inference flows.'
     },
     {
-      name: 'Arjun',
-      role: 'DevOps & Cloud',
-      photo: 'https://i.pravatar.cc/240?img=27',
+      name: 'Aditya Patel',
+      role: 'Team Leader',
+      photo: '/src/assets/images/adityapatel.png',
+      bio: 'Builds responsive UI, dashboards, and real-time interactions.'
+    },
+    {
+      name: 'Aditya Rathore',
+      role: 'DevOps Engineer',
+      photo: '/src/assets/images/adityarathore.jpg',
       bio: 'Automates CI/CD, deploys, and monitors production reliability.'
     },
     {
-      name: 'Priya',
+      name: 'Priyanshu',
       role: 'QA & Security',
-      photo: 'https://i.pravatar.cc/240?img=48',
-      bio: 'Owns testing strategy, security checks, and release quality.'
+      photo: '/src/assets/images/priyanshu.png',
+      bio: 'Owns testing strategy, security checks, and re  lease quality.'
     },
     {
-      name: 'Kunal',
+      name: 'Shikhar',
       role: 'Device & Sensors',
-      photo: 'https://i.pravatar.cc/240?img=5',
+      photo: '/src/assets/images/shikhar.png',
       bio: 'Integrates edge devices, telemetry, and calibration routines.'
     },
   ];
@@ -540,7 +540,7 @@ const About = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-6">
           {team.map((member, index) => (
             <motion.div
               key={index}
@@ -553,7 +553,7 @@ const About = () => {
               <img
                 src={member.photo}
                 alt={member.name}
-                className="w-20 h-20 rounded-full object-cover mx-auto mb-4 border-2 border-(--primary-blue)/30"
+                className="w-30 h-30 rounded-full object-cover object-top mx-auto mb-4 border-2 border-(--primary-blue)/30"
                 loading="lazy"
               />
               <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>

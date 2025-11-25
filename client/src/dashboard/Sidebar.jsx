@@ -15,10 +15,12 @@ import {
   Home,
   Info
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth();
   const [isDesktop, setIsDesktop] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -84,9 +86,15 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     }
   };
 
-  const handleLogout = () => {
-    // Add logout logic here
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Still navigate to home even if logout fails
+      navigate('/');
+    }
   };
 
   return (
