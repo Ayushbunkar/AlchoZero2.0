@@ -388,31 +388,31 @@ const About = () => {
           <div className="space-y-12">
             {[
               {
-                phase: 'Phase 1: Prototype',
+                phase: 'Phase 1:Prototype Build (Aug–Sep 2025)',
                 status: 'Completed',
-                date: 'Q4 2024',
-                items: ['Core detection algorithm', 'ESP32 integration', 'Firebase backend', 'Basic dashboard'],
+                date: 'Aug – Sep 2025',
+                items: ['Core idea and requirements', 'First working prototype', 'Internal hackathon submission'],
                 color: 'success-green'
               },
               {
-                phase: 'Phase 2: Enhancement',
+                phase: 'Phase 2: SIH Grand Finale Development (Oct–Dec 2025)',
                 status: 'In Progress',
-                date: 'Q1 2025',
-                items: ['Advanced AI features', 'Mobile app', 'Multi-device support', 'Enhanced analytics'],
+                date: 'Oct – Dec 2025',
+                items: ['Shortlisting & mentoring', 'Feature upgrades and AI improvements', 'App integration and testing', 'Prepare final SIH model'],
                 color: 'primary-blue'
               },
               {
-                phase: 'Phase 3: Commercial',
+                phase: 'Phase 3: Post-SIH Product Development (Early 2026)',
                 status: 'Upcoming',
-                date: 'Q2-Q3 2025',
-                items: ['Fleet management', 'OEM partnerships', 'International deployment', 'Regulatory approval'],
+                date: 'Early 2026',
+                items: ['Commercial-grade hardware design', 'Security & compliance upgrades', 'OEM and API integrations'],
                 color: 'accent-blue'
               },
               {
-                phase: 'Phase 4: Scale',
+                phase: 'Phase 4: Deployment & Scale (2026+)',
                 status: 'Future',
                 date: '2026+',
-                items: ['Global expansion', 'Advanced AI models', 'Autonomous integration', 'Industry standard'],
+                items: ['Pilot rollouts', 'Nationwide deployment', 'Global expansion', 'Ongoing security & compliance improvements'],
                 color: 'secondary-blue'
               }
             ].map((phase, index) => (
