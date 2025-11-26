@@ -85,14 +85,13 @@ const Services = () => {
     <div>
    
       <div className="max-w-6xl mt-20 mx-auto p-6 rounded-xl border border-white/10 shadow-soft bg-gradient-to-br from-(--primary-blue)/6 to-transparent mb-6">
-        <div className="relative w-full h-96 sm:h-[30rem] rounded-lg overflow-hidden border-2 border-white/5">
-          <img
-            src={truckimage}
-            alt="Feature truck"
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        </div>
+          <div className="relative w-full h-96 sm:h-[40rem] rounded-lg overflow-hidden border-0 bg-dark-bg">
+            <div
+              className="w-full h-full bg-cover bg-center"
+              style={{ backgroundImage: `url(${truckimage})` }}
+              aria-hidden="true"
+            />
+          </div>
       </div>
      
 
