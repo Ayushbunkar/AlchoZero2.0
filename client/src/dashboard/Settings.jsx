@@ -165,7 +165,7 @@ const Settings = () => {
             <button
               onClick={handleSaveProfile}
               disabled={saving}
-              className="flex items-center space-x-2 px-6 py-3 bg-(--primary-blue) hover:bg-(--primary-blue)/80 disabled:opacity-50 text-white rounded-lg transition-colors"
+              className="flex items-center space-x-2 px-6 py-3 bg-(--primary-blue) hover:bg-(--primary-blue)/80 disabled:opacity-50 text-primary rounded-lg transition-colors"
             >
               {saving ? (
                 <RefreshCw className="w-5 h-5 animate-spin" />
@@ -187,7 +187,7 @@ const Settings = () => {
               transition={{ delay: 0.1 }}
               className="glass-card p-6"
             >
-              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+              <h3 className="text-xl font-bold text-primary mb-6 flex items-center">
                 <User className="w-5 h-5 mr-2 text-(--primary-blue)" />
                 Profile Information
               </h3>
@@ -199,7 +199,7 @@ const Settings = () => {
                     type="text"
                     value={profile.name}
                     onChange={(e) => setProfile({...profile, name: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
+                    className="w-full px-3 py-2 bg-dark-bg border border-(--glass-border) rounded-lg text-primary placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
                   />
                 </div>
                 <div>
@@ -293,7 +293,7 @@ const Settings = () => {
 
                 {/* Regional Settings */}
                 <div>
-                  <h4 className="text-white font-medium mb-3">Regional Settings</h4>
+                  <h4 className="text-primary font-medium mb-3">Regional Settings</h4>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm text-gray-400 mb-2">Timezone</label>
@@ -325,7 +325,7 @@ const Settings = () => {
 
                 {/* Dashboard Settings */}
                 <div>
-                  <h4 className="text-white font-medium mb-3">Dashboard</h4>
+                  <h4 className="text-primary font-medium mb-3">Dashboard</h4>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -374,7 +374,7 @@ const Settings = () => {
                           ...preferences,
                           dashboard: {...preferences.dashboard, defaultView: e.target.value}
                         })}
-                        className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white focus:outline-none focus:border-(--primary-blue)"
+                        className="w-full px-3 py-2 bg-dark-bg border border-(--glass-border) rounded-lg text-primary focus:outline-none focus:border-(--primary-blue)"
                       >
                         <option value="monitor">Monitor</option>
                         <option value="alerts">Alerts</option>

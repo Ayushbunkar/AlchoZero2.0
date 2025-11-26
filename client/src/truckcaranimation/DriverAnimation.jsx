@@ -124,7 +124,8 @@ export default function DriverAnimation() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-screen bg-[#101015] overflow-hidden flex flex-col items-center justify-center"
+      className="relative w-full h-screen app-bg overflow-hidden flex flex-col items-center justify-center"
+      style={{ backgroundColor: 'var(--page-bg, #101015)' }}
     >
       {/* --- BUBBLES LAYER (Z-10) --- 
           Placed Z-10 so they are visible, but the truck (Z-20) will be in front of them
@@ -134,8 +135,13 @@ export default function DriverAnimation() {
           <div
             key={i}
             ref={(el) => (bubbles.current[i] = el)}
-            className="px-6 py-3 bg-white/95 text-gray-900 font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)]
-                        rounded-full text-base border border-gray-300 tracking-wide whitespace-nowrap"
+            className="px-6 py-3 font-bold rounded-full text-base tracking-wide whitespace-nowrap"
+            style={{
+              backgroundColor: 'var(--bubble-bg, rgba(255,255,255,0.95))',
+              color: 'var(--bubble-text, #111827)',
+              boxShadow: 'var(--bubble-shadow, 0 0 20px rgba(0,0,0,0.12))',
+              border: '1px solid var(--glass-border, rgba(0,0,0,0.08))',
+            }}
           >
             {txt}
           </div>
@@ -147,8 +153,11 @@ export default function DriverAnimation() {
         <img
           src={truckImg}
           alt="Truck"
-          className="w-[650px] object-contain drop-shadow-2xl"
-          style={{ transform: "translateX(-50px)" }}
+          className="w-[650px] object-contain"
+          style={{
+            transform: 'translateX(-50px)',
+            filter: 'var(--img-drop, drop-shadow(0 30px 40px rgba(0,0,0,0.6)))',
+          }}
         />
       </div>
 
@@ -159,28 +168,55 @@ export default function DriverAnimation() {
       >
         {/* 1. AlcoZero Trailer */}
         <div className="relative translate-y-[-12px] mb-3 z-20">
-          <span className="text-5xl font-black text-white uppercase tracking-wider drop-shadow-md z-10">
+          <span
+            className="text-5xl font-black uppercase tracking-wider z-10"
+            style={{ color: 'var(--brand, var(--primary-blue, #00A3FF))' }}
+          >
             AlcoZero
           </span>
         </div>
 
         {/* 2. The Rope (Connection) */}
-        <div className="w-[80px] h-[8px] translate-x-[10px] bg-gray-500 mx-[-10px] mb-[40px] relative z-10 rounded-full shadow-inner"></div>
+        <div
+          className="w-[80px] h-[8px] translate-x-[10px] mx-[-10px] mb-[40px] relative z-10 rounded-full"
+          style={{ backgroundColor: 'var(--rope-bg, rgba(128,128,128,0.5))' }}
+        ></div>
 
         {/* 3. The Car */}
         <div className="relative z-20 transform translate-x-[-17px] translate-y-[70px]">
           <img
             src={carImg}
             alt="Car"
-            className="w-[500px] object-contain drop-shadow-2xl"
+            className="w-[500px] object-contain"
+            style={{ filter: 'var(--img-drop, drop-shadow(0 30px 40px rgba(0,0,0,0.6)))' }}
           />
         </div>
       </div>
 
       {/* --- REALISTIC ROAD --- */}
-      <div className="absolute bottom-0 w-full h-40 bg-[#151515] border-t border-gray-700 z-10 flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-[#1a1a1a] to-black opacity-90"></div>
-        <div className="w-full h-0 border-t-[8px] border-dashed border-yellow-500/80 z-10"></div>
+      <div
+        className="absolute bottom-0 w-full h-40 border-t z-10 flex items-center justify-center"
+        style={{
+          backgroundColor: 'var(--road-bg, #151515)',
+          borderTopColor: 'var(--road-border, rgba(100,100,100,0.25))',
+        }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'var(--road-gradient, linear-gradient(90deg, rgba(0,0,0,1), rgba(26,26,26,1) 50%, rgba(0,0,0,1)))',
+            opacity: 0.65,
+          }}
+        ></div>
+        <div
+          className="w-full h-0 border-t-[8px] border-dashed"
+          style={{
+            borderTopColor: 'var(--road-dash, #FFD200)',
+            zIndex: 30,
+            position: 'relative',
+            boxShadow: '0 0 14px rgba(255,210,0,0.45)',
+          }}
+        ></div>
       </div>
     </div>
   );

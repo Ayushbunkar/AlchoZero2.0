@@ -165,7 +165,7 @@ const Security = () => {
               transition={{ delay: 0.1 }}
               className="glass-card p-6"
             >
-              <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+              <h3 className="text-xl font-bold text-primary mb-6 flex items-center">
                 <Lock className="w-5 h-5 mr-2 text-(--primary-blue)" />
                 Account Security
               </h3>
@@ -174,7 +174,7 @@ const Security = () => {
                 {/* Two-Factor Authentication */}
                 <div className="flex items-center justify-between p-4 bg-dark-bg rounded-lg">
                   <div>
-                    <h4 className="text-white font-medium">Two-Factor Authentication</h4>
+                    <h4 className="text-primary font-medium">Two-Factor Authentication</h4>
                     <p className="text-gray-400 text-sm">Add an extra layer of security to your account</p>
                   </div>
                   <button
@@ -194,7 +194,7 @@ const Security = () => {
                 {/* Session Timeout */}
                 <div className="p-4 bg-dark-bg rounded-lg">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-white font-medium">Session Timeout</h4>
+                    <h4 className="text-primary font-medium">Session Timeout</h4>
                     <span className="text-gray-400 text-sm">{settings.sessionTimeout} minutes</span>
                   </div>
                   <input
@@ -213,7 +213,7 @@ const Security = () => {
 
                 {/* Password Policy */}
                 <div className="p-4 bg-dark-bg rounded-lg">
-                  <h4 className="text-white font-medium mb-3">Password Policy</h4>
+                  <h4 className="text-primary font-medium mb-3">Password Policy</h4>
                   <div className="space-y-2">
                     {[
                       { key: 'weak', label: 'Weak (6+ chars)', desc: 'Basic security' },
@@ -230,7 +230,7 @@ const Security = () => {
                           className="text-(--primary-blue) focus:ring-(--primary-blue)"
                         />
                         <div>
-                          <span className="text-white text-sm">{policy.label}</span>
+                          <span className="text-primary text-sm">{policy.label}</span>
                           <p className="text-gray-400 text-xs">{policy.desc}</p>
                         </div>
                       </label>
@@ -240,7 +240,7 @@ const Security = () => {
 
                 {/* Change Password */}
                 <div className="p-4 bg-dark-bg rounded-lg">
-                  <h4 className="text-white font-medium mb-4">Change Password</h4>
+                  <h4 className="text-primary font-medium mb-4">Change Password</h4>
                   <div className="space-y-4">
                     <div className="relative">
                       <input
@@ -248,7 +248,7 @@ const Security = () => {
                         placeholder="Current password"
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="w-full px-3 py-2 pr-10 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
+                        className="w-full px-3 py-2 pr-10 bg-dark-bg border border-(--glass-border) rounded-lg text-primary placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
                       />
                       <button
                         onClick={() => setShowPassword(!showPassword)}
@@ -262,7 +262,7 @@ const Security = () => {
                       placeholder="New password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
+                      className="w-full px-3 py-2 bg-dark-bg border border-(--glass-border) rounded-lg text-primary placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
                     />
                     <input
                       type="password"
@@ -273,7 +273,7 @@ const Security = () => {
                     />
                     <button
                       onClick={handlePasswordChange}
-                      className="w-full px-4 py-2 bg-(--primary-blue) hover:bg-(--primary-blue)/80 text-white rounded-lg transition-colors"
+                      className="w-full px-4 py-2 bg-(--primary-blue) hover:bg-(--primary-blue)/80 text-primary rounded-lg transition-colors"
                     >
                       Update Password
                     </button>

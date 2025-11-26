@@ -40,7 +40,7 @@ const DeviceCard = ({ device }) => {
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-xl font-bold text-white mb-1">{deviceId}</h3>
+          <h3 className="text-xl font-bold text-primary mb-1">{deviceId}</h3>
           <p className="text-sm text-gray-400">
             Last Update: {formatTimestamp(timestamp)}
           </p>

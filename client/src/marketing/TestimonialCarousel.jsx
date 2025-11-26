@@ -70,9 +70,7 @@ const TestimonialCarousel = ({ items = [], autoPlay = true, delay = 3500 }) => {
         onMouseEnter={pause}
         onMouseLeave={() => (intervalRef.current = setInterval(next, delay))}
       >
-        {/* EDGE GRADIENTS */}
-        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-black/30 to-transparent pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black/30 to-transparent pointer-events-none" />
+        {/* EDGE GRADIENTS removed for flat card look */}
 
         {/* HEADER */}
         <div className="flex items-center justify-between mb-4">

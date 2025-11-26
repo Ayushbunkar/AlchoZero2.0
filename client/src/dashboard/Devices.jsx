@@ -242,7 +242,7 @@ const Devices = () => {
             </div>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center space-x-2 px-6 py-3 bg-(--primary-blue) hover:bg-(--primary-blue)/80 text-white rounded-lg transition-colors"
+              className="flex items-center space-x-2 px-6 py-3 bg-(--primary-blue) hover:bg-(--primary-blue)/80 text-primary rounded-lg transition-colors"
             >
               <Plus className="w-5 h-5" />
               <span>Add Device</span>
@@ -265,7 +265,7 @@ const Devices = () => {
                 placeholder="Search devices..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
+                className="w-full pl-10 pr-4 py-2 bg-dark-bg border border-(--glass-border) rounded-lg text-primary placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
               />
             </div>
             <div className="flex items-center space-x-2">
@@ -273,7 +273,7 @@ const Devices = () => {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 py-2 bg-dark-bg border border-white/20 rounded-lg text-white focus:outline-none focus:border-(--primary-blue)"
+                className="px-4 py-2 bg-dark-bg border border-(--glass-border) rounded-lg text-primary focus:outline-none focus:border-(--primary-blue)"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -373,7 +373,7 @@ const Devices = () => {
                       />
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
-                        <User className="w-6 h-6 text-white" />
+                        <User className="w-6 h-6 text-primary" />
                       </div>
                     )}
                     <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-dark-bg ${
@@ -383,7 +383,7 @@ const Devices = () => {
                     }`} />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-white group-hover:text-cyan-400 transition-colors">
+                    <h3 className="text-lg font-semibold text-primary group-hover:text-cyan-400 transition-colors">
                       {device.name}
                     </h3>
                     <p className="text-sm text-gray-400">{device.deviceId}</p>
@@ -397,7 +397,7 @@ const Devices = () => {
               <div className="space-y-3 mb-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">Driver</span>
-                  <span className="text-sm font-medium text-white">
+                  <span className="text-sm font-medium text-primary">
                     {device.driverName || 'Not assigned'}
                   </span>
                 </div>
@@ -411,14 +411,14 @@ const Devices = () => {
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">Vehicle</span>
-                  <span className="text-sm text-white">{device.vehicleNumber || 'N/A'}</span>
+                  <span className="text-sm text-primary">{device.vehicleNumber || 'N/A'}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">Location</span>
                   <div className="flex items-center space-x-1">
                     <MapPin className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-white">{device.location || 'Unknown'}</span>
+                    <span className="text-sm text-primary">{device.location || 'Unknown'}</span>
                   </div>
                 </div>
 

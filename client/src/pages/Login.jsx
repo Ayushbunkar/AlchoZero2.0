@@ -65,7 +65,7 @@ const Login = () => {
         className="w-full max-w-md relative z-10"
       >
         {/* Login Card */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-8">
+        <div className="bg-bg-subtle backdrop-blur-xl border border-(--glass-border) rounded-2xl shadow-2xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
             <motion.div
@@ -74,9 +74,9 @@ const Login = () => {
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
               className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4"
             >
-              <Lock className="w-8 h-8 text-white" />
+              <Lock className="w-8 h-8 text-primary" />
             </motion.div>
-            <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+            <h1 className="text-3xl font-bold text-primary mb-2">Welcome Back</h1>
             <p className="text-gray-400">Sign in to access your dashboard</p>
           </div>
 
@@ -107,7 +107,7 @@ const Login = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-4 py-3 bg-bg-subtle border border-(--glass-border) rounded-lg text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
                   placeholder="admin@alcozero.com"
                   required
                 />
@@ -146,7 +146,7 @@ const Login = () => {
               <label className="flex items-center gap-2 text-gray-400 cursor-pointer hover:text-white transition-colors">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-white/10 bg-white/5 text-blue-500 focus:ring-blue-500/50 focus:ring-offset-0"
+                  className="w-4 h-4 rounded border-(--glass-border) bg-bg-subtle text-blue-500 focus:ring-blue-500/50 focus:ring-offset-0"
                 />
                 <span>Remember me</span>
               </label>
@@ -175,7 +175,7 @@ const Login = () => {
           {/* Divider */}
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
+              <div className="w-full border-t border-(--glass-border)"></div>
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-[#1a1a2e] text-gray-400">OR</span>

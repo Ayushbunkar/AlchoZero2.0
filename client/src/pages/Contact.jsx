@@ -101,15 +101,15 @@ const Contact = () => {
       </motion.div>
 
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-12 items-stretch">
           {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="glass-card p-8"
+            className="glass-card p-8 h-full flex flex-col"
           >
-            <h2 className="text-2xl font-bold text-white mb-6">Send us a Message</h2>
+            <h2 className="text-2xl font-bold text-primary mb-6">Send us a Message</h2>
             
             {success && (
               <motion.div
@@ -133,7 +133,7 @@ const Contact = () => {
               </motion.div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 flex-1">
               {/* Name */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
@@ -145,7 +145,7 @@ const Contact = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-blue transition-colors"
+                  className="w-full px-4 py-3 bg-dark-bg border border-(--glass-border) rounded-lg text-primary placeholder-gray-500 focus:outline-none focus-border-neon-blue transition-colors"
                   placeholder="Full Name"
                   required
                 />
@@ -202,12 +202,13 @@ const Contact = () => {
               </div>
 
               {/* Submit Button */}
-              <motion.button
+              <div className="mt-4">
+                <motion.button
                 type="submit"
                 disabled={loading}
                 whileHover={{ scale: loading ? 1 : 1.02 }}
                 whileTap={{ scale: loading ? 1 : 0.98 }}
-                className={`w-full py-4 rounded-lg font-semibold text-white transition-all duration-300 ${
+                className={`w-full py-4 rounded-lg font-semibold text-primary transition-all duration-300 ${
                   loading
                     ? 'bg-gray-600 cursor-not-allowed'
                     : 'bg-linear-to-r from-(--primary-blue) to-(--accent-blue) hover:shadow-lg hover:shadow-(--primary-blue)/50'
@@ -216,7 +217,7 @@ const Contact = () => {
                 {loading ? (
                   <span className="flex items-center justify-center">
                     <svg
-                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -240,7 +241,8 @@ const Contact = () => {
                 ) : (
                   'Send Message'
                 )}
-              </motion.button>
+                </motion.button>
+              </div>
             </form>
           </motion.div>
 
@@ -252,13 +254,13 @@ const Contact = () => {
             className="space-y-6"
           >
             <div className="glass-card p-8">
-              <h2 className="text-2xl font-bold text-white mb-6">Contact Information</h2>
+              <h2 className="text-2xl font-bold text-primary mb-6">Contact Information</h2>
               <div className="space-y-6">
                 {contactInfo.map((info, index) => (
                   <div key={index} className="flex items-start">
                     <div className="text-3xl mr-4">{info.icon}</div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-white mb-1">
+                      <h3 className="text-lg font-semibold text-primary mb-1">
                         {info.title}
                       </h3>
                       {info.link ? (
@@ -281,7 +283,7 @@ const Contact = () => {
 
             {/* FAQ Section */}
             <div className="glass-card p-8">
-              <h2 className="text-2xl font-bold text-white mb-6">Quick Help</h2>
+              <h2 className="text-2xl font-bold text-primary mb-6">Quick Help</h2>
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-semibold text-neon-blue mb-2">
@@ -315,7 +317,7 @@ const Contact = () => {
 
             {/* Social Media */}
             <div className="glass-card p-8">
-              <h2 className="text-2xl font-bold text-white mb-6">Follow Us</h2>
+              <h2 className="text-2xl font-bold text-primary mb-6">Follow Us</h2>
               <div className="flex space-x-4">
                 {[
                   { name: 'Facebook', icon: Facebook, href: '#' },

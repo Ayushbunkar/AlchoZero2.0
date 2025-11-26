@@ -96,7 +96,7 @@ const Signup = () => {
         className="w-full max-w-2xl relative z-10"
       >
         {/* Signup Card */}
-        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-8">
+        <div className="bg-bg-subtle backdrop-blur-xl border border-(--glass-border) rounded-2xl shadow-2xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
             <motion.div
@@ -105,9 +105,9 @@ const Signup = () => {
               transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
               className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4"
             >
-              <User className="w-8 h-8 text-white" />
+              <User className="w-8 h-8 text-primary" />
             </motion.div>
-            <h1 className="text-3xl font-bold text-white mb-2">Create Account</h1>
+            <h1 className="text-3xl font-bold text-primary mb-2">Create Account</h1>
             <p className="text-gray-400">Join AlcoZero to manage your devices</p>
           </div>
 
@@ -153,7 +153,7 @@ const Signup = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
+                  className="w-full pl-11 pr-4 py-3 bg-bg-subtle border border-(--glass-border) rounded-lg text-primary placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all"
                   placeholder="John Doe"
                   required
                 />
@@ -200,7 +200,7 @@ const Signup = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -258,7 +258,7 @@ const Signup = () => {
             <button
               type="submit"
               disabled={loading || success}
-              className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-primary font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -279,7 +279,7 @@ const Signup = () => {
           {/* Divider */}
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
+              <div className="w-full border-t border-(--glass-border)"></div>
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-[#1a1a2e] text-gray-400">OR</span>

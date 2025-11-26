@@ -70,7 +70,7 @@ const Home = () => {
             transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">How It Works</h2>
+            <h2 className="text-2xl md:text-4xl font-bold text-primary mb-4">How It Works</h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
               Simple, automated, and effective in 3 steps
             </p>
@@ -112,7 +112,7 @@ const Home = () => {
                       {item.step}
                     </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-4">
+                  <h3 className="text-2xl font-bold text-primary mb-4">
                     {item.title}
                   </h3>
                   <p className="text-gray-400 leading-relaxed">

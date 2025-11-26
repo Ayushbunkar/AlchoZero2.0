@@ -85,7 +85,7 @@ const DashboardHome = () => {
   ];
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 bg-gradient-to-br from-gray-950 to-gray-900 min-h-screen">
+    <div className="p-4 md:p-6 lg:p-8 min-h-screen app-bg" style={{ backgroundColor: 'var(--page-bg)' }}>
       <div className="max-w-7xl mx-auto">
 
         {/* Welcome Header & Fleet Overview */}
@@ -105,6 +105,14 @@ const DashboardHome = () => {
               </p>
             </div>
             <div className="flex gap-4">
+              <div className="hidden md:flex items-center mr-2">
+                <button
+                  onClick={() => navigate('/dashboard/devices')}
+                  className="px-4 py-2 rounded-lg font-semibold text-white bg-linear-to-r from-(--primary-blue) to-(--accent-blue) hover:shadow-lg transition-colors"
+                >
+                  Add Device
+                </button>
+              </div>
               <div className="bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 text-center">
                 <div className="text-2xl font-bold text-cyan-400">{total}</div>
                 <div className="text-xs text-gray-400 mt-1">Total Devices</div>
@@ -388,9 +396,9 @@ const Dashboard = () => {
 
   // Main Dashboard with Sidebar and Routing
   return (
-    <div className="h-screen bg-dark-bg overflow-hidden">
+    <div className="h-screen app-bg overflow-hidden" style={{ backgroundColor: 'var(--page-bg)' }}>
       {/* Mobile Sidebar Toggle - positioned below navbar */}
-      <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-dark-bg/95 backdrop-blur-sm border-b border-white/10">
+      <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-[rgba(0,0,0,0.05)] dark:bg-dark-bg/95 backdrop-blur-sm border-b border-white/10">
         <div className="flex items-center justify-between p-4">
           <button
             onClick={() => setSidebarOpen(true)}

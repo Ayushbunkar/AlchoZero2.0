@@ -292,8 +292,8 @@ const About = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="section-title mb-4">System Highlights</h2>
-          <p className="text-gray-400 text-lg">
+            <h2 className="section-title mb-4 text-(--primary-blue)">System Highlights</h2>
+            <p className="text-gray-400 text-lg leading-relaxed">
             What makes AlcoZero the best choice for vehicle safety
           </p>
         </motion.div>

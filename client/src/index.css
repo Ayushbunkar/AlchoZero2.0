@@ -5,16 +5,93 @@
   --primary-blue: #2563eb;        /* Professional blue */
   --secondary-blue: #1e40af;      /* Darker blue */
   --accent-blue: #3b82f6;         /* Lighter blue */
+  --brand: var(--primary-blue);
   --success-green: #0891b2;       /* Professional aqua blue */
   --warning-orange: #d97706;      /* Professional orange */
   --error-red: #dc2626;           /* Professional red */
   --dark-bg: #0a0a0a;             /* Keep dark background */
   --dark-card: #1a1a1a;           /* Keep dark cards */
+  --page-bg: var(--dark-bg);
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
   --text-primary: #ffffff;        /* White text */
   --text-secondary: #9ca3af;      /* Gray text */
   --text-muted: #6b7280;          /* Muted gray */
+}
+
+/* Light theme overrides */
+:root[data-theme='light'], [data-theme='light'] {
+  --primary-blue: #1e40af;
+  --secondary-blue: #1e3a8a;
+  --accent-blue: #2563eb;
+  --success-green: #047481;
+  --dark-bg: #ffffff;
+  --dark-card: #f7f7fb;
+  --glass-bg: rgba(10, 10, 10, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --text-primary: #0a0a0a;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  /* Brand/logo color in light mode should be dark for contrast */
+  --brand: #0a0a0a;
+  --page-bg: var(--dark-bg);
+}
+
+/* Map common dark utility classes to light-theme equivalents for cards/boxes */
+:root[data-theme='light'] .bg-gray-900 {
+  background-color: var(--dark-card) !important;
+}
+:root[data-theme='light'] .border-gray-800 {
+  border-color: var(--glass-border) !important;
+}
+:root[data-theme='light'] .bg-gray-900 .text-gray-200,
+:root[data-theme='light'] .bg-gray-900 .text-gray-400 {
+  color: var(--text-secondary) !important;
+}
+
+/* Stat boxes (rounded small cards) */
+:root[data-theme='light'] .bg-gray-900.rounded-xl,
+:root[data-theme='light'] .bg-gray-900.rounded-full,
+:root[data-theme='light'] .bg-gray-900.rounded-lg {
+  background-color: var(--dark-card) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Utility to apply app background + text color */
+.app-bg {
+  background-color: var(--page-bg) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Smooth theme transitions */
+html, body, .app-bg, .glass-card, .bg-bg-subtle, .glass-card * {
+  transition: background-color 240ms ease, color 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
+}
+
+/* Light-mode helpers: map common dark-theme utility classes to light-theme colors */
+:root[data-theme='light'] .text-white {
+  color: var(--text-primary) !important;
+}
+:root[data-theme='light'] .text-gray-300,
+:root[data-theme='light'] .text-gray-400,
+:root[data-theme='light'] .text-gray-500 {
+  color: var(--text-secondary) !important;
+}
+/* Make very-light gray text readable in light theme (e.g. social icons) */
+:root[data-theme='light'] .text-gray-200 {
+  color: var(--text-secondary) !important;
+}
+:root[data-theme='light'] .border-white\/10,
+:root[data-theme='light'] .border-white\/20,
+:root[data-theme='light'] .border-white\/5 {
+  border-color: var(--glass-border) !important;
+}
+/* Map translucent white backgrounds to subtle glass on light theme (social icon buttons) */
+:root[data-theme='light'] .bg-white\/6 {
+  background-color: var(--glass-bg) !important;
+}
+:root[data-theme='light'] .bg-dark-bg {
+  background-color: var(--dark-card) !important;
 }
 
 /* Custom Utility Classes */

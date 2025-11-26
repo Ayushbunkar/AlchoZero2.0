@@ -30,13 +30,13 @@ import homeHero from '../assets/images/homeimage.png';
 import truckimage from '../assets/images/truckimage.png';
 
 const PricingCard = ({ title, price, features = [], cta }) => (
-  <div className="bg-bg-subtle rounded-xl border border-white/10 shadow-soft p-5 hover:border-(--primary-blue)/30 transition-colors duration-300">
+  <div className="bg-bg-subtle rounded-xl border border-(--glass-border) shadow-soft p-5 hover:border-(--primary-blue)/30 transition-colors duration-300">
     <div className="text-sm font-semibold text-(--primary-blue) mb-2">{title}</div>
-    <div className="text-3xl font-bold text-white mb-3">{price}</div>
+    <div className="text-3xl font-bold text-primary mb-3">{price}</div>
     <ul className="text-xs text-gray-300 space-y-1 mb-4 list-disc pl-4">
       {features.map((f) => (<li key={f}>{f}</li>))}
     </ul>
-    <button className="px-4 py-2 rounded-lg bg-(--success-green) text-white text-sm w-full font-medium hover:bg-(--success-green)/90 transition-colors">{cta}</button>
+    <button className="px-4 py-2 rounded-lg bg-(--success-green) text-primary text-sm w-full font-medium hover:bg-(--success-green)/90 transition-colors">{cta}</button>
   </div>
 );
 

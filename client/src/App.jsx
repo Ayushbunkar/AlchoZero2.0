@@ -16,7 +16,7 @@ const Dashboard = lazy(() => import('./dashboard/Dashboard'));
 
 // Loading component
 const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] text-white">
+  <div className="min-h-screen flex items-center justify-center app-bg">
     <div className="text-center">
       <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-cyan-400 mx-auto mb-4"></div>
       <p className="text-gray-400">Loading...</p>
@@ -33,28 +33,28 @@ function AppContent() {
       <Routes>
         {/* Public routes with Navbar and Footer */}
         <Route path="/" element={
-          <div className="min-h-screen bg-[#0a0a0a] text-white">
+          <div className="min-h-screen app-bg">
             <Navbar />
             <Home />
             <Footer />
           </div>
         } />
         <Route path="/about" element={
-          <div className="min-h-screen bg-[#0a0a0a] text-white">
+          <div className="min-h-screen app-bg">
             <Navbar />
             <About />
             <Footer />
           </div>
         } />
         <Route path="/features" element={
-          <div className="min-h-screen bg-[#0a0a0a] text-white">
+          <div className="min-h-screen app-bg">
             <Navbar />
             <Features />
             <Footer />
           </div>
         } />
         <Route path="/contact" element={
-          <div className="min-h-screen bg-[#0a0a0a] text-white">
+          <div className="min-h-screen app-bg">
             <Navbar />
             <Contact />
             <Footer />
@@ -63,14 +63,14 @@ function AppContent() {
         
         {/* Auth routes with Navbar and Footer */}
         <Route path="/login" element={
-          <div className="min-h-screen bg-[#0a0a0a] text-white">
+          <div className="min-h-screen app-bg">
             <Navbar />
             <Login />
             <Footer />
           </div>
         } />
         <Route path="/signup" element={
-          <div className="min-h-screen bg-[#0a0a0a] text-white">
+          <div className="min-h-screen app-bg">
             <Navbar />
             <Signup />
             <Footer />
@@ -79,7 +79,7 @@ function AppContent() {
         
         {/* Dashboard routes - WITH Navbar, NO Footer, full h-screen */}
         <Route path="/dashboard/*" element={
-          <div className="min-h-screen bg-[#0a0a0a] text-white">
+          <div className="min-h-screen app-bg">
             <Navbar />
             <Dashboard />
           </div>

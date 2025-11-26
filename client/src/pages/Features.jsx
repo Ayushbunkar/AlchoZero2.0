@@ -218,7 +218,7 @@ const Features = () => {
                 <div className="md:w-1/2 mb-6 md:mb-0 md:px-8">
                   <div className="glass-card p-6">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-bold text-white">{cat.category}</h3>
+                      <h3 className="text-xl font-bold text-primary">{cat.category}</h3>
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-(--primary-blue)/10 text-(--primary-blue)">
                         Specs
                       </span>
@@ -227,7 +227,7 @@ const Features = () => {
                       {cat.specs.map((spec, sidx) => (
                         <div key={sidx} className="flex justify-between items-center border-b border-white/10 pb-3">
                           <span className="text-gray-400 text-sm">{spec.label}</span>
-                          <span className="text-white font-semibold text-sm">{spec.value}</span>
+                          <span className="text-primary font-semibold text-sm">{spec.value}</span>
                         </div>
                       ))}
                     </div>
@@ -272,7 +272,7 @@ const Features = () => {
               className="glass-card p-6 text-center hover:shadow-xl hover:shadow-neon-purple/20 transition-all duration-300"
             >
               <div className="text-4xl mb-4">{advantage.icon}</div>
-              <h3 className="text-xl font-bold text-white mb-3">
+              <h3 className="text-xl font-bold text-primary mb-3">
                 {advantage.title}
               </h3>
               <p className="text-gray-400 text-sm leading-relaxed">
@@ -308,7 +308,7 @@ const Features = () => {
                   <div className="w-20 h-20 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple flex items-center justify-center text-3xl mb-3">
                     {item.icon}
                   </div>
-                  <span className="text-white font-semibold">{item.label}</span>
+                  <span className="text-primary font-semibold">{item.label}</span>
                 </div>
                 {index < 4 && (
                   <div className="hidden md:block text-neon-blue text-2xl">→</div>
