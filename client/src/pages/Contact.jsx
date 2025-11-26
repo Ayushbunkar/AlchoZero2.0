@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
 import { saveContact } from '../firebaseConfig';
 
 const Contact = () => {
@@ -66,26 +67,20 @@ const Contact = () => {
     {
       icon: '📧',
       title: 'Email',
-      value: 'support@alcozero.com',
-      link: 'mailto:support@alcozero.com',
+      value: 'infoalcozero@gmail.com',
+      link: 'mailto:infoalcozero@gmail.com',
     },
     {
       icon: '📞',
       title: 'Phone',
-      value: '+1 (555) 123-4567',
-      link: 'tel:+15551234567',
+      value: '+91 0755 618 5300',
+      link: 'tel:+91 07556185300',
     },
     {
       icon: '📍',
       title: 'Address',
-      value: '123 Safety Street, Tech City, TC 12345',
-      link: 'https://maps.google.com',
-    },
-    {
-      icon: '🕐',
-      title: 'Business Hours',
-      value: 'Mon - Fri: 9AM - 6PM',
-      link: null,
+      value: 'Raisen Rd, nr. Hanuman Mandir, Kalchuri Nagar, Bhopal, Madhya Pradesh 462022',
+      link: 'https://www.google.com/maps/dir//LNCT+Group+of+Colleges,+Raisen+Rd,+nr.+Hanuman+Mandir,+Kalchuri+Nagar,+Bhopal,+Madhya+Pradesh+462022/data=!4m6!4m5!1m1!4e2!1m2!1m1!1s0x397c4244c97d6f29:0x72457a4e85fd116c?sa=X&ved=1t:57443&ictx=111',
     },
   ];
 
@@ -151,7 +146,7 @@ const Contact = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-blue transition-colors"
-                  placeholder="John Doe"
+                  placeholder="Full Name"
                   required
                 />
               </div>
@@ -168,7 +163,7 @@ const Contact = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-blue transition-colors"
-                  placeholder="john@example.com"
+                  placeholder="email@example.com"
                   required
                 />
               </div>
@@ -185,7 +180,7 @@ const Contact = () => {
                   value={formData.phone}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-neon-blue transition-colors"
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+91 12345 67890"
                 />
               </div>
 
@@ -323,22 +318,28 @@ const Contact = () => {
               <h2 className="text-2xl font-bold text-white mb-6">Follow Us</h2>
               <div className="flex space-x-4">
                 {[
-                  { name: 'Facebook', icon: '📘' },
-                  { name: 'Twitter', icon: '🐦' },
-                  { name: 'LinkedIn', icon: '💼' },
-                  { name: 'Instagram', icon: '📷' },
-                ].map((social, index) => (
-                  <motion.a
-                    key={index}
-                    href="#"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-2xl hover:bg-neon-blue/20 transition-colors"
-                    title={social.name}
-                  >
-                    {social.icon}
-                  </motion.a>
-                ))}
+                  { name: 'Facebook', icon: Facebook, href: '#' },
+                  { name: 'Twitter', icon: Twitter, href: '#' },
+                  { name: 'LinkedIn', icon: Linkedin, href: '#' },
+                  { name: 'Instagram', icon: Instagram, href: '#' },
+                ].map((social, index) => {
+                  const Icon = social.icon;
+                  return (
+                    <motion.a
+                      key={index}
+                      href={social.href}
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-12 h-12 rounded-full bg-white/6 flex items-center justify-center hover:bg-neon-blue/20 transition-colors"
+                      title={social.name}
+                      aria-label={social.name}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Icon className="w-5 h-5 text-gray-200" />
+                    </motion.a>
+                  );
+                })}
               </div>
             </div>
           </motion.div>

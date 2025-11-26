@@ -142,10 +142,6 @@ const Home = () => {
           <Link to="/contact" className="text-sm text-accent-yellow hover:underline">Have feedback? Contact us →</Link>
         </div>
       </Section>
-
-      <Section>
-        <div className="text-center text-xs text-gray-500">Prototype only – no real impairment analysis performed.</div>
-      </Section>
     </div>
   );
 

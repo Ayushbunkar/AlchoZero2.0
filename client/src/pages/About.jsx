@@ -156,7 +156,7 @@ const About = () => {
 
       </motion.div>
 
-      {/* Mission Statement */}
+      {/* Mission & Vision - Side by side */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -164,28 +164,19 @@ const About = () => {
         transition={{ duration: 0.8 }}
         className="max-w-7xl mx-auto mb-20"
       >
-        <div className="glass-card p-12 text-center">
-          <h2 className="text-3xl font-bold text-(--primary-blue) mb-6">Our Mission</h2>
-          <p className="text-lg text-gray-300 leading-relaxed max-w-4xl mx-auto">
-            To eliminate drunk driving accidents by implementing cutting-edge IoT technology that
-            seamlessly integrates with vehicles, providing automatic protection without driver
-            intervention. Our system combines hardware sensors with cloud computing to create a
-            comprehensive safety solution.
-          </p>
-        </div>
-      </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="glass-card p-10">
+            <h2 className="text-3xl font-bold text-(--primary-blue) mb-4">Our Mission</h2>
+            <p className="text-lg text-gray-300 leading-relaxed">
+              To eliminate drunk driving accidents by implementing cutting-edge IoT technology that
+              seamlessly integrates with vehicles, providing automatic protection without driver
+              intervention. Our system combines hardware sensors with cloud computing to create a
+              comprehensive safety solution.
+            </p>
+          </div>
 
-      {/* Vision Statement */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        className="max-w-7xl mx-auto mb-20"
-      >
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="glass-card p-8">
-            <h2 className="text-3xl font-bold text-(--accent-blue) mb-6">Our Vision</h2>
+          <div className="glass-card p-10">
+            <h2 className="text-3xl font-bold text-(--accent-blue) mb-4">Our Vision</h2>
             <p className="text-gray-300 leading-relaxed mb-6">
               A world where technology proactively protects lives, where vehicles become intelligent
               guardians that prevent accidents before they occur, and where safety is seamlessly
@@ -202,7 +193,6 @@ const About = () => {
               </div>
             </div>
           </div>
-
         </div>
       </motion.div>
 
@@ -227,7 +217,7 @@ const About = () => {
               <h3 className="text-xl font-bold text-white mb-3">Global Crisis Statistics</h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-4 bg-red-500/10 rounded-lg border border-red-500/20">
-                  <div className="text-3xl font-bold text-red-400">1.3M</div>
+                  <div className="text-3xl font-bold text-red-400">1.2M</div>
                   <div className="text-sm text-gray-400">Deaths Worldwide</div>
                 </div>
                 <div className="text-center p-4 bg-orange-500/10 rounded-lg border border-orange-500/20">
@@ -235,12 +225,12 @@ const About = () => {
                   <div className="text-sm text-gray-400">Injuries Annually</div>
                 </div>
                 <div className="text-center p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-                  <div className="text-3xl font-bold text-yellow-400">$800B</div>
-                  <div className="text-sm text-gray-400">Economic Cost</div>
+                  <div className="text-3xl font-bold text-yellow-400">1.6%</div>
+                  <div className="text-sm text-gray-400">Percentage increase Annually</div>
                 </div>
                 <div className="text-center p-4 bg-purple-500/10 rounded-lg border border-purple-500/20">
-                  <div className="text-3xl font-bold text-purple-400">25%</div>
-                  <div className="text-sm text-gray-400">Underage Drivers</div>
+                  <div className="text-3xl font-bold text-purple-400">32%</div>
+                  <div className="text-sm text-gray-400">Drinking Driving</div>
                 </div>
               </div>
             </div>
@@ -250,9 +240,8 @@ const About = () => {
               <ul className="space-y-3">
                 {[
                   'Human judgment is unreliable under influence',
-                  'Breathalyzers require voluntary compliance',
-                  'No prevention, only detection after the fact',
-                  'Limited scalability across large fleets',
+        
+                  'No prevention, even after detection',
                   'High cost of implementation and maintenance'
                 ].map((item, index) => (
                   <li key={index} className="flex items-center">
@@ -269,7 +258,7 @@ const About = () => {
             <div className="space-y-4">
               {[
                 'Automated detection without human intervention',
-                'Engine immobilization prevents accidents',
+                'In case of detection the car won\'t start',
                 'Real-time alerts and monitoring',
                 'Scalable across entire vehicle fleets',
                 'Cost-effective with rapid ROI'

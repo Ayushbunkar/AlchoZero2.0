@@ -81,8 +81,8 @@ const Features = () => {
     {
       category: 'Sensor Specifications',
       specs: [
-        { label: 'Type', value: 'MQ-3 Alcohol Sensor' },
-        { label: 'Detection Range', value: '0.04 - 4 mg/L' },
+        { label: 'Type', value: 'MQ-3 Alcohol Sensor & MICS 5524' },
+        { label: 'Detection Range', value: '500 ppm' },
         { label: 'Response Time', value: '< 1 second' },
         { label: 'Operating Voltage', value: '5V DC' },
       ],
@@ -90,10 +90,8 @@ const Features = () => {
     {
       category: 'System Requirements',
       specs: [
-        { label: 'Microcontroller', value: 'ESP32 / NodeMCU' },
-        { label: 'Power Supply', value: '5V, 2A minimum' },
+        { label: 'Microcomputer', value: 'Raspberry Pi' },
         { label: 'Internet', value: 'Wi-Fi connectivity' },
-        { label: 'Operating Temp', value: '-10°C to 50°C' },
       ],
     },
     {
@@ -151,7 +149,7 @@ const Features = () => {
       >
         <h1 className="section-title mb-6">Comprehensive Features</h1>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-          Explore the powerful features that make AlcoZero the most advanced 
+          Explore the powerful features that make AlcoZero the most advanced
           alcohol detection system for vehicles
         </p>
       </motion.div>
@@ -199,34 +197,51 @@ const Features = () => {
           className="text-center mb-12"
         >
           <h2 className="section-title mb-4">Technical Specifications</h2>
-          <p className="text-gray-400 text-lg">
-            Detailed technical information about the system
-          </p>
+          <p className="text-gray-400 text-lg">Detailed technical information about the system</p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {technicalSpecs.map((category, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.2 }}
-              className="glass-card p-6"
-            >
-              <h3 className="text-xl font-bold text-neon-blue mb-6">
-                {category.category}
-              </h3>
-              <div className="space-y-4">
-                {category.specs.map((spec, idx) => (
-                  <div key={idx} className="flex justify-between items-center border-b border-white/10 pb-3">
-                    <span className="text-gray-400 text-sm">{spec.label}</span>
-                    <span className="text-white font-semibold text-sm">{spec.value}</span>
+        <div className="relative">
+          {/* Vertical center line for timeline (hidden on small screens) */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-linear-to-b from-(--primary-blue) to-(--accent-blue) rounded-full hidden md:block"></div>
+
+
+          <div className="space-y-12">
+            {technicalSpecs.map((cat, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.15 }}
+                className={`flex flex-col md:flex-row items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+              >
+                <div className="md:w-1/2 mb-6 md:mb-0 md:px-8">
+                  <div className="glass-card p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-bold text-white">{cat.category}</h3>
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-(--primary-blue)/10 text-(--primary-blue)">
+                        Specs
+                      </span>
+                    </div>
+                    <div className="space-y-3">
+                      {cat.specs.map((spec, sidx) => (
+                        <div key={sidx} className="flex justify-between items-center border-b border-white/10 pb-3">
+                          <span className="text-gray-400 text-sm">{spec.label}</span>
+                          <span className="text-white font-semibold text-sm">{spec.value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
+                </div>
+
+                {/* central dot */}
+                <div className="absolute left-1/2 -translate-x-1/2 w-5 h-5 bg-white rounded-full border-[4px] border-[#1e40ff]"></div>
+
+
+                <div className="md:w-1/2"></div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
 
