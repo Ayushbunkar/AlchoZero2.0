@@ -46,11 +46,15 @@ export default function DriverAnimation() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
-          start: "top top",
+          // Offset start slightly to account for a fixed navbar height (adjust if needed)
+          start: "top top+=72",
           end: "+=2500",
           scrub: 1,
           pin: true,
           anticipatePin: 1,
+          // Enable markers temporarily to debug trigger positions in dev/prod if needed
+          // Remove markers:true when debugging is finished
+          markers: false,
         },
       });
 
@@ -110,6 +114,9 @@ export default function DriverAnimation() {
         "-=0.5"
       );
     }, containerRef);
+
+    // Ensure ScrollTrigger measurements are correct after layout changes
+    ScrollTrigger.refresh();
 
     return () => ctx.revert();
   }, []);
