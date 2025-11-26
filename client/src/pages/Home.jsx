@@ -10,6 +10,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Car, ShieldAlert, Activity } from 'lucide-react';
 import homeHero from '../assets/images/homeimage.png';
 import Services from './Services';
+import DriverAnimation from "../truckcaranimation/DriverAnimation";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -51,6 +52,10 @@ const Home = () => {
           </MotionInView>
         </div>
       </Section>
+
+      <>
+        <DriverAnimation />
+      </>
 
       {/* Services Section */}
       <Services />
@@ -143,6 +148,8 @@ const Home = () => {
       </Section>
     </div>
   );
+
 };
+
 
 export default Home;
