@@ -125,16 +125,6 @@ const Services = () => {
         </div>
       </Section>
 
-      <Section className="py-4 md:py-6">
-        <MotionInView>
-          <img
-            src={feat1}
-            alt="Illustration of device connectivity and event flow"
-            className="w-full h-auto rounded-xl border border-white/10 shadow-soft object-cover"
-            loading="lazy"
-          />
-        </MotionInView>
-      </Section>
 
       <Section title="Plans" subtitle="Illustrative pricing for demo purposes only." className="py-6 md:py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
