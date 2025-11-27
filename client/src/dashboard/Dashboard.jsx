@@ -85,7 +85,7 @@ const DashboardHome = () => {
   ];
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 min-h-screen app-bg" style={{ backgroundColor: 'var(--page-bg)' }}>
+    <div className="p-4 md:p-6 lg:p-8 pt-20 min-h-screen app-bg" style={{ backgroundColor: 'var(--page-bg)' }}>
       <div className="max-w-7xl mx-auto">
 
         {/* Welcome Header & Fleet Overview */}

@@ -682,6 +682,90 @@ const THRESHOLD = 0.03; // Match hardware threshold
 
 ---
 
+## 🔧 Backend (Firebase) — Detailed
+
+This project uses Firebase Realtime Database (RTDB) for low-latency device telemetry, Firestore for persisted alerts/logs/statistics, and Cloud Functions for server-side processing.
+
+### Key Cloud Functions (file: `functions/index.js`)
+- `onAlcoholDetected` — Trigger: RTDB `deviceStatus/{deviceId}/alcoholLevel` onUpdate
+  - Detects when alcohol level crosses `THRESHOLD = 0.03`.
+  - Creates an `alerts` document in Firestore and calls `sendEmailAlert()` (nodemailer) to notify admin.
+  - Marks severity `CRITICAL` if alcohol level > 0.08.
+
+- `autoLogAlcoholLevel` — Trigger: RTDB `deviceStatus/{deviceId}/alcoholLevel` onWrite
+  - Persists every reading into Firestore `logs` with `status: 'ALERT' | 'SAFE'`.
+
+- `onEngineStatusChange` — Trigger: RTDB `deviceStatus/{deviceId}/engine` onUpdate
+  - Writes `engineLogs` entries and sends engine-lock notifications if engine changed `ON -> OFF`.
+
+- `cleanupOldLogs` (scheduled) — deletes `logs` older than 30 days
+- `generateDailyStats` (scheduled) — aggregates today's logs/alerts into `statistics`
+
+### Data model (summary)
+- RTDB: `deviceStatus/{deviceId}` (fields: `alcoholLevel`, `engine`, `lastSeen`, `battery`, `gps`)
+- Firestore collections: `alerts`, `logs`, `engineLogs`, `statistics`
+
+Example `alerts` document:
+```json
+{
+  "deviceId": "device-123",
+  "alcoholLevel": 0.042,
+  "engine": "OFF",
+  "type": "AUTO",
+  "timestamp": 1690001000000,
+  "message": "ALERT: High alcohol level detected (0.042 BAC)",
+  "status": "new",
+  "severity": "HIGH"
+}
+```
+
+### Security
+- Firestore rules are in `firestore.rules`. Important rules:
+  - `logs` and `alerts` can be created/read by authenticated users; update/delete restricted to admins.
+  - `engineLogs` and `statistics` are intended to be written only by Cloud Functions.
+- Recommendation: Add strict RTDB rules so only authorized devices or server service accounts can write telemetry.
+
+### Environment & secrets
+- Do NOT hard-code credentials in `functions/index.js`.
+- Use Firebase config or Google Secret Manager.
+  - Example (PowerShell):
+    ```powershell
+    firebase functions:config:set smtp.user="your-email@gmail.com" smtp.pass="your-app-password" admin.email="admin@alcozero.com"
+    ```
+  - Access via `functions.config().smtp.user` in Cloud Functions.
+
+### Deploying & emulators
+- Install functions dependencies and deploy:
+  ```powershell
+  cd "d:\Yash Coding\sih final\Alchozero2.0\functions"
+  npm install
+  firebase deploy --only functions
+  ```
+- Use emulator for local testing:
+  ```powershell
+  # from repo root
+  firebase emulators:start --only functions,firestore,database
+  ```
+
+### How to simulate an alert (quick test)
+1. Using Firebase Console or REST, write a safe value then a high value to RTDB path `deviceStatus/test-device/alcoholLevel`:
+```powershell
+$project = "<PROJECT_ID>"
+$url = "https://${project}.firebaseio.com/deviceStatus/test-device/alcoholLevel.json"
+Invoke-RestMethod -Method PUT -Uri $url -Body "0.01"
+Invoke-RestMethod -Method PUT -Uri $url -Body "0.05"
+```
+2. Expected: `logs` doc created, `alerts` doc created, and email sent if SMTP configured.
+
+### Recommended improvements (brief)
+- Move SMTP credentials to `functions.config()` or Secret Manager.
+- Implement `deviceCommands/{deviceId}` write on alert (recommended) so devices receive lock commands and ACK.
+- Add deduplication/cooldown to avoid repeated alerts for sustained high readings.
+- Allow per-device thresholds stored in `devices/{deviceId}`.
+- Harden RTDB security rules so only authorized devices may write telemetry.
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
