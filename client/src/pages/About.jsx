@@ -147,7 +147,7 @@ const About = () => {
           <img src={logo} alt="AlcoZero Logo" className="h-35 w-35" />
         </motion.div>
         <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
-          About <span className="text-(--primary-blue)">AlcoZero</span>
+          About <span className="text-neon-blue">AlcoZero</span>
         </h1>
         <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-8">
           Revolutionizing vehicle safety through intelligent alcohol detection technology.
@@ -166,7 +166,7 @@ const About = () => {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="glass-card p-10">
-            <h2 className="text-3xl font-bold text-(--primary-blue) mb-4">Our Mission</h2>
+            <h2 className="text-3xl font-bold text-neon-blue mb-4">Our Mission</h2>
             <p className="text-lg text-gray-300 leading-relaxed">
               To eliminate drunk driving accidents by implementing cutting-edge IoT technology that
               seamlessly integrates with vehicles, providing automatic protection without driver
@@ -176,7 +176,7 @@ const About = () => {
           </div>
 
           <div className="glass-card p-10">
-            <h2 className="text-3xl font-bold text-(--accent-blue) mb-4">Our Vision</h2>
+            <h2 className="text-3xl font-bold text-accent-blue mb-4">Our Vision</h2>
             <p className="text-gray-300 leading-relaxed mb-6">
               A world where technology proactively protects lives, where vehicles become intelligent
               guardians that prevent accidents before they occur, and where safety is seamlessly
@@ -184,11 +184,11 @@ const About = () => {
             </p>
             <div className="space-y-3">
               <div className="flex items-center">
-                <span className="text-(--success-green) mr-3">🌍</span>
+                <span className="text-accent-yellow mr-3">🌍</span>
                 <span className="text-gray-300">Global standard for vehicle safety</span>
               </div>
               <div className="flex items-center">
-                <span className="text-(--success-green) mr-3">🤝</span>
+                <span className="text-accent-yellow mr-3">🤝</span>
                 <span className="text-gray-300">Partnerships with automotive industry</span>
               </div>
             </div>
@@ -254,7 +254,7 @@ const About = () => {
           </div>
 
           <div className="glass-card p-8">
-            <h3 className="text-2xl font-bold text-(--success-green) mb-6">AlcoZero's Solution</h3>
+            <h3 className="text-2xl font-bold text-accent-yellow mb-6">AlcoZero's Solution</h3>
             <div className="space-y-4">
               {[
                 'Automated detection without human intervention',
@@ -269,9 +269,9 @@ const About = () => {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex items-center p-3 bg-(--success-green)/10 rounded-lg border border-(--success-green)/20"
+                  className="flex items-center p-3 bg-white/5 rounded-lg border border-white/10"
                 >
-                  <span className="text-(--success-green) mr-3 text-xl">✓</span>
+                  <span className="text-accent-yellow mr-3 text-xl">✓</span>
                   <span className="text-gray-300 font-medium">{item}</span>
                 </motion.div>
               ))}
@@ -292,7 +292,7 @@ const About = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-            <h2 className="section-title mb-4 text-(--primary-blue)">System Highlights</h2>
+            <h2 className="section-title mb-4 text-neon-blue">System Highlights</h2>
             <p className="text-gray-400 text-lg leading-relaxed">
             What makes AlcoZero the best choice for vehicle safety
           </p>
@@ -307,7 +307,7 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               whileHover={{ scale: 1.05 }}
-              className="glass-card p-6 hover:shadow-xl hover:shadow-(--primary-blue)/20 transition-all duration-300"
+              className="glass-card p-6 hover:shadow-xl transition-all duration-300"
             >
               <div className="text-4xl mb-4">{highlight.icon}</div>
               <h3 className="text-xl font-bold text-white mb-3">
@@ -352,14 +352,14 @@ const About = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="glass-card p-6 text-center hover:scale-105 transition-transform duration-300"
             >
-              <img
+                <img
                 src={member.photo}
                 alt={member.name}
-                className="w-30 h-30 rounded-full object-cover object-top mx-auto mb-4 border-2 border-(--primary-blue)/30"
+                className="w-30 h-30 rounded-full object-cover object-top mx-auto mb-4 border-2 border-white/10"
                 loading="lazy"
               />
               <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
-              <p className="text-(--primary-blue) font-medium mb-3">{member.role}</p>
+              <p className="text-neon-blue font-medium mb-3">{member.role}</p>
               <p className="text-gray-400 text-sm leading-relaxed">{member.bio}</p>
             </motion.div>
           ))}
@@ -428,25 +428,25 @@ const About = () => {
                   <div className="glass-card p-6">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-xl font-bold text-white">{phase.phase}</h3>
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${phase.status === 'Completed' ? 'bg-(--success-green)/20 text-(--success-green)' :
-                          phase.status === 'In Progress' ? 'bg-(--primary-blue)/20 text-(--primary-blue)' :
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${phase.status === 'Completed' ? 'bg-white/5 text-accent-yellow' :
+                          phase.status === 'In Progress' ? 'bg-white/5 text-neon-blue' :
                             'bg-gray-600/20 text-gray-400'
                         }`}>
                         {phase.status}
                       </span>
                     </div>
-                    <p className="text-(--primary-blue) font-medium mb-3">{phase.date}</p>
+                    <p className="text-neon-blue font-medium mb-3">{phase.date}</p>
                     <ul className="space-y-2">
                       {phase.items.map((item, itemIndex) => (
                         <li key={itemIndex} className="flex items-center text-gray-300 text-sm">
-                          <span className="text-(--success-green) mr-2">•</span>
+                          <span className="text-accent-yellow mr-2">•</span>
                           {item}
                         </li>
                       ))}
                     </ul>
                   </div>
                 </div>
-                <div className="hidden md:block w-4 h-4 bg-(--primary-blue) rounded-full border-4 border-dark-bg relative z-10"></div>
+                <div className="hidden md:block w-4 h-4 bg-white/10 rounded-full border-4 border-dark-bg relative z-10"></div>
                 <div className="md:w-1/2"></div>
               </motion.div>
             ))}
@@ -462,12 +462,12 @@ const About = () => {
         transition={{ duration: 0.8 }}
         className="max-w-7xl mx-auto mb-20"
       >
-        <div className="glass-card p-12 text-center relative overflow-hidden">
+          <div className="glass-card p-12 text-center relative overflow-hidden">
           {/* Background pattern */}
           <div className="absolute inset-0 opacity-5">
-            <div className="absolute top-10 left-10 w-20 h-20 border border-(--primary-blue) rounded-full"></div>
-            <div className="absolute top-20 right-20 w-16 h-16 border border-(--accent-blue) rounded-full"></div>
-            <div className="absolute bottom-10 left-1/4 w-12 h-12 border border-(--success-green) rounded-full"></div>
+            <div className="absolute top-10 left-10 w-20 h-20 border border-white/10 rounded-full"></div>
+            <div className="absolute top-20 right-20 w-16 h-16 border border-white/10 rounded-full"></div>
+            <div className="absolute bottom-10 left-1/4 w-12 h-12 border border-white/10 rounded-full"></div>
           </div>
 
           <div className="relative z-10">
@@ -476,13 +476,13 @@ const About = () => {
               whileInView={{ scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="inline-block p-4 bg-linear-to-r from-(--primary-blue)/10 to-(--accent-blue)/10 rounded-full mb-6"
+              className="inline-block p-4 bg-linear-to-r from-white/5 to-white/5 rounded-full mb-6"
             >
               <div className="text-5xl">🚀</div>
             </motion.div>
 
             <h2 className="text-4xl font-bold text-white mb-6">
-              Ready to <span className="text-(--primary-blue)">Transform</span> Vehicle Safety?
+              Ready to <span className="text-neon-blue">Transform</span> Vehicle Safety?
             </h2>
 
             <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
@@ -493,15 +493,15 @@ const About = () => {
 
             <div className="grid md:grid-cols-3 gap-6 mb-10">
               <div className="text-center p-4">
-                <div className="text-3xl font-bold text-(--success-green) mb-2">Free</div>
+                <div className="text-3xl font-bold text-accent-yellow mb-2">Free</div>
                 <div className="text-gray-400">Pilot Program</div>
               </div>
               <div className="text-center p-4">
-                <div className="text-3xl font-bold text-(--primary-blue) mb-2">24/7</div>
+                <div className="text-3xl font-bold text-neon-blue mb-2">24/7</div>
                 <div className="text-gray-400">Technical Support</div>
               </div>
               <div className="text-center p-4">
-                <div className="text-3xl font-bold text-(--accent-blue) mb-2">30-Day</div>
+                <div className="text-3xl font-bold text-accent-blue mb-2">30-Day</div>
                 <div className="text-gray-400">Money-Back Guarantee</div>
               </div>
             </div>
@@ -510,14 +510,14 @@ const About = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-linear-to-r from-(--primary-blue) to-(--accent-blue) text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-(--primary-blue)/25 transition-all duration-300"
+                className="px-8 py-4 bg-linear-to-r from-white/5 to-white/5 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
               >
                 Start Free Pilot
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 border-2 border-(--primary-blue) text-(--primary-blue) font-semibold rounded-lg hover:bg-(--primary-blue)/10 transition-all duration-300"
+                className="px-8 py-4 border-2 border-white/10 text-neon-blue font-semibold rounded-lg hover:bg-white/5 transition-all duration-300"
               >
                 Schedule Demo
               </motion.button>

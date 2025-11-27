@@ -68,6 +68,20 @@ html, body, .app-bg, .glass-card, .bg-bg-subtle, .glass-card * {
   transition: background-color 240ms ease, color 240ms ease, border-color 240ms ease, box-shadow 240ms ease;
 }
 
+/* Ensure the entire app background is applied to the document and prevent horizontal overflow */
+html, body {
+  background-color: var(--page-bg);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* Make images responsive by default to avoid accidental horizontal overflow */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* Light-mode helpers: map common dark-theme utility classes to light-theme colors */
 :root[data-theme='light'] .text-white {
   color: var(--text-primary) !important;
@@ -118,6 +132,8 @@ html, body, .app-bg, .glass-card, .bg-bg-subtle, .glass-card * {
 .text-accent-yellow {
   color: var(--success-green);
 }
+
+.text-accent-blue { color: var(--accent-blue); }
 
 .text-primary {
   color: var(--text-primary);
