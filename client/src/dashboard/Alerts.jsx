@@ -180,9 +180,10 @@ const Alerts = () => {
                   onClick={() => setFilter(option.key)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     filter === option.key
-                      ? 'bg-(--primary-blue) text-white'
+                      ? 'bg-(--primary-blue) text-white!'
                       : 'bg-dark-bg border border-white/20 text-gray-400 hover:text-white'
                   }`}
+                  style={filter === option.key ? { color: '#ffffff' } : undefined}
                 >
                   {option.label}
                 </button>

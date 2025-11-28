@@ -10,6 +10,10 @@ const Home = lazy(() => import('./pages/Home'));
 const About = lazy(() => import('./pages/About'));
 const Features = lazy(() => import('./pages/Features'));
 const Contact = lazy(() => import('./pages/Contact'));
+const HelpCenter = lazy(() => import('./pages/HelpCenter'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./pages/TermsOfService'));
+const FAQ = lazy(() => import('./pages/FAQ'));
 const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/Signup'));
 const Dashboard = lazy(() => import('./dashboard/Dashboard'));
@@ -57,6 +61,34 @@ function AppContent() {
           <div className="min-h-screen app-bg">
             <Navbar />
             <Contact />
+            <Footer />
+          </div>
+        } />
+        <Route path="/help-center" element={
+          <div className="min-h-screen app-bg">
+            <Navbar />
+            <HelpCenter />
+            <Footer />
+          </div>
+        } />
+        <Route path="/privacy-policy" element={
+          <div className="min-h-screen app-bg">
+            <Navbar />
+            <PrivacyPolicy />
+            <Footer />
+          </div>
+        } />
+        <Route path="/terms-of-service" element={
+          <div className="min-h-screen app-bg">
+            <Navbar />
+            <TermsOfService />
+            <Footer />
+          </div>
+        } />
+        <Route path="/faq" element={
+          <div className="min-h-screen app-bg">
+            <Navbar />
+            <FAQ />
             <Footer />
           </div>
         } />

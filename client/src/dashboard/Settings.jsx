@@ -51,6 +51,7 @@ const Settings = () => {
     }
   });
   const [saving, setSaving] = useState(false);
+  const [pressed, setPressed] = useState(false);
 
   // Check authentication
   useEffect(() => {
@@ -165,12 +166,17 @@ const Settings = () => {
             <button
               onClick={handleSaveProfile}
               disabled={saving}
-              className="flex items-center space-x-2 px-6 py-3 bg-(--primary-blue) hover:bg-(--primary-blue)/80 disabled:opacity-50 text-primary rounded-lg transition-colors"
+              onMouseDown={() => setPressed(true)}
+              onMouseUp={() => setPressed(false)}
+              onMouseLeave={() => setPressed(false)}
+              onBlur={() => setPressed(false)}
+              className={`flex items-center space-x-2 px-6 py-3 bg-(--primary-blue) hover:bg-(--primary-blue)/80 disabled:opacity-50 rounded-lg transition-colors text-white!`}
+              style={{ color: '#ffffff' }}
             >
               {saving ? (
-                <RefreshCw className="w-5 h-5 animate-spin" />
+                <RefreshCw className="w-5 h-5 animate-spin text-current" />
               ) : (
-                <Save className="w-5 h-5" />
+                <Save className="w-5 h-5 text-current" />
               )}
               <span>{saving ? 'Saving...' : 'Save Changes'}</span>
             </button>

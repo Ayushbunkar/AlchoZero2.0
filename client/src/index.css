@@ -82,6 +82,11 @@ img {
   display: block;
 }
 
+/* Force white color even in light theme (use sparingly) */
+.force-white {
+  color: #ffffff !important;
+}
+
 /* Light-mode helpers: map common dark-theme utility classes to light-theme colors */
 :root[data-theme='light'] .text-white {
   color: var(--text-primary) !important;

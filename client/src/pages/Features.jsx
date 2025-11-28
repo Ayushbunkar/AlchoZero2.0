@@ -17,10 +17,10 @@ const Features = () => {
     },
     {
       icon: '🔒',
-      title: 'Automated Engine Lock',
-      description: 'Instant engine immobilization when unsafe alcohol levels are detected',
+      title: 'Battery Cutoff Mechanism',
+      description: 'Automatic Power cutoff upon alcohol detection',
       details: [
-        'Relay-based engine control',
+        'Relay-based battery cutoff',
         'Fail-safe locking mechanism',
         'Manual override for emergencies',
         'Visual and audio indicators',
@@ -66,7 +66,7 @@ const Features = () => {
     {
       icon: '🔌',
       title: 'Device Integration',
-      description: 'Easy integration with ESP32/NodeMCU microcontrollers',
+      description: 'Easy integration with Raspberry Pi microcomputers',
       details: [
         'Plug-and-play installation',
         'Wi-Fi connectivity',
@@ -297,7 +297,7 @@ const Features = () => {
           </h2>
           <div className="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-4">
             {[
-              { label: 'MQ-3 Sensor', icon: '🔬' },
+              { label: 'MICS 5524', icon: '🔬' },
               { label: 'Raspberry Pi 5', icon: '💻' },
               { label: 'Firebase', icon: '☁️' },
               { label: 'Dashboard', icon: '📊' },

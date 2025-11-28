@@ -108,7 +108,8 @@ const DashboardHome = () => {
               <div className="hidden md:flex items-center mr-2">
                 <button
                   onClick={() => navigate('/dashboard/devices')}
-                  className="px-4 py-2 rounded-lg font-semibold text-white bg-linear-to-r from-(--primary-blue) to-(--accent-blue) hover:shadow-lg transition-colors"
+                  className="px-4 py-2 rounded-lg font-semibold text-white! bg-linear-to-r from-(--primary-blue) to-(--accent-blue) hover:shadow-lg transition-colors"
+                  style={{ color: '#ffffff' }}
                 >
                   Add Device
                 </button>

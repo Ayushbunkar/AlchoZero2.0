@@ -2,6 +2,7 @@ import React, { useState, memo } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Sun } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../assets/images/logo.png';
 
@@ -211,9 +212,7 @@ function ThemeToggle() {
       className="ml-2 p-2 rounded-full bg-(--primary-blue)/10 hover:bg-(--primary-blue)/15 transition-colors"
     >
       {theme === 'dark' ? (
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-(--primary-blue)" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zM4.22 5.22a1 1 0 011.415 0L6.64 6.22a1 1 0 11-1.414 1.415L4.22 6.636a1 1 0 010-1.415zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zM5.22 14.78a1 1 0 010-1.415L6.636 12.36a1 1 0 111.415 1.414l-1.005 1.005a1 1 0 01-1.415 0zM10 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM14.78 14.78a1 1 0 011.415 0l1.005 1.005a1 1 0 11-1.414 1.415l-1.005-1.005a1 1 0 010-1.415zM16 10a1 1 0 011-1h1a1 1 0 110 2h-1a1 1 0 01-1-1zM14.78 5.22a1 1 0 010 1.415L13.36 7.636a1 1 0 11-1.415-1.414l1.005-1.005a1 1 0 011.415 0z" />
-        </svg>
+        <Sun className="h-5 w-5 text-(--primary-blue)" />
       ) : (
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-(--primary-blue)" viewBox="0 0 20 20" fill="currentColor">
           <path d="M17.293 13.293A8 8 0 116.707 2.707a7 7 0 0010.586 10.586z" />

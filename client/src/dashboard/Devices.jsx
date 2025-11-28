@@ -242,7 +242,8 @@ const Devices = () => {
             </div>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center space-x-2 px-6 py-3 bg-(--primary-blue) hover:bg-(--primary-blue)/80 text-primary rounded-lg transition-colors"
+              className="flex items-center space-x-2 px-6 py-3 bg-(--primary-blue) hover:bg-(--primary-blue)/80 text-white! rounded-lg transition-colors"
+              style={{ color: '#ffffff' }}
             >
               <Plus className="w-5 h-5" />
               <span>Add Device</span>

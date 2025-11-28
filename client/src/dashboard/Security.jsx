@@ -273,7 +273,8 @@ const Security = () => {
                     />
                     <button
                       onClick={handlePasswordChange}
-                      className="w-full px-4 py-2 bg-(--primary-blue) hover:bg-(--primary-blue)/80 text-primary rounded-lg transition-colors"
+                      className="w-full px-4 py-2 bg-(--primary-blue) hover:bg-(--primary-blue)/80 text-white! rounded-lg transition-colors"
+                      style={{ color: '#ffffff' }}
                     >
                       Update Password
                     </button>
