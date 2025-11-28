@@ -36,39 +36,39 @@ const About = () => {
   const team = [
     {
       name: 'Aditya Singh Patel',
-      role: 'Project Leader',
+      role: 'Project Lead and Hardware Engineer',
       photo: '/images/adityapatel.png',
       bio: 'Leads project management, coordination, and overall vision.'
     },
     {
       name: 'Ayush Bunkar',
-      role: 'Frontend Backend & AI/ML Engineer',
+      role: 'Web Developer & DevOps Lead',
       photo: '/images/ayush.png',
-      bio: 'Owns system design, APIs, database models, and integrations.'
+      bio: 'Responsible for building scalable web applications, managing deployment pipelines, automation, and ensuring smooth CI/CD operations.'
     },
     {
       name: 'Riya Palod',
-      role: 'Researcher and UI/UX Designer',
+      role: 'UI/UX Designer, Research Specialist & Presenter',
       photo: '/images/riya.jpg',
-      bio: 'Researcher and UI/UX designer creating intuitive, data-driven products.'
+      bio: 'Responsible for user experience design, product research, brand design, and presenting concepts effectively.'
     },
     {
       name: 'Aditya Singh Rathore',
-      role: 'Circuit Designer and hardware integrator',
+      role: 'Market Research Analyst & QA / Bug Hunter',
       photo: '/images/adityarathore.jpg',
-      bio: 'Designs circuits, PCB layouts, and ensures hardware reliability.'
+      bio: 'Responsible for user research, market analysis, product testing, bug identification, and performance evaluation'
     },
     {
       name: 'Priyanshu Lohani',
-      role: 'App developer & AI/ML Engineer',
+      role: 'App Developer & Machine Learning Engineer',
       photo: '/images/priyanshu.png',
-      bio: 'Develops mobile app and implements AI algorithms for detection.'
+      bio: 'Responsible for building high-quality Android/iOS apps and integrating intelligent ML-driven features.'
     },
     {
       name: 'Shikhar Mishra',
-      role: 'Hardware and Embedded Systems Engineer',
+      role: 'Hardware Engineer & Cloud Infrastructure Specialist',
       photo: '/images/shikhar.png',
-      bio: 'Programs microcontrollers and optimizes sensor integration.'
+      bio: 'Responsible for embedded systems, sensor integration, IoT hardware, and cloud infrastructure design.'
     },
   ];
 
