@@ -72,30 +72,6 @@ const About = () => {
     },
   ];
 
-
-  // const achievements = [
-  //   {
-  //     icon: '🏆',
-  //     title: 'SIH 2025 Finalist',
-  //     description: 'Selected as finalist in Smart India Hackathon 2025 for innovative safety solution'
-  //   },
-  //   {
-  //     icon: '🔬',
-  //     title: 'Patent Pending',
-  //     description: 'Proprietary AI algorithms and IoT integration methods under patent protection'
-  //   },
-  //   {
-  //     icon: '🌟',
-  //     title: 'Industry Recognition',
-  //     description: 'Featured in automotive safety publications and industry conferences'
-  //   },
-  //   {
-  //     icon: '📈',
-  //     title: 'Growing Adoption',
-  //     description: 'Deployed in 50+ vehicles across pilot programs with 99.9% success rate'
-  //   },
-  // ];
-
   const highlights = [
     {
       icon: '⚡',
@@ -352,12 +328,14 @@ const About = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className="glass-card p-6 text-center hover:scale-105 transition-transform duration-300"
             >
-                <img
-                src={member.photo}
-                alt={member.name}
-                className="w-30 h-30 rounded-full object-cover object-top mx-auto mb-4 border-2 border-white/10"
-                loading="lazy"
-              />
+                <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden mx-auto mb-4 border-2 border-white/10">
+                  <img
+                    src={member.photo}
+                    alt={member.name}
+                    className="w-full h-full object-cover object-top"
+                    loading="lazy"
+                  />
+                </div>
               <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
               <p className="text-neon-blue font-medium mb-3">{member.role}</p>
               <p className="text-gray-400 text-sm leading-relaxed">{member.bio}</p>
