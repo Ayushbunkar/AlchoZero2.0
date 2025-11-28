@@ -46,6 +46,35 @@ try {
 }
 
 // ==========================================
+// ⚡ Lightweight in-memory cache for reads
+// ==========================================
+const _cache = new Map();
+
+const makeCacheKey = (prefix, ...parts) => `${prefix}:${parts.join('|')}`;
+
+const fetchWithCache = async (key, fn, ttl = 30000) => {
+  const now = Date.now();
+  const entry = _cache.get(key);
+  if (entry && (now - entry.ts) < ttl) {
+    return entry.value;
+  }
+
+  const value = await fn();
+  _cache.set(key, { value, ts: Date.now() });
+  return value;
+};
+
+export const invalidateCache = (keyPrefix = '') => {
+  if (!keyPrefix) {
+    _cache.clear();
+    return;
+  }
+  for (const key of Array.from(_cache.keys())) {
+    if (key.startsWith(keyPrefix)) _cache.delete(key);
+  }
+};
+
+// ==========================================
 // 🔐 AUTHENTICATION FUNCTIONS
 // ==========================================
 
@@ -207,17 +236,20 @@ export const saveDeviceLog = async (deviceId, data) => {
  */
 export const getDeviceLogs = async (limitCount = 50) => {
   try {
-    const q = query(
-      collection(db, 'logs'),
-      orderBy('timestamp', 'desc'),
-      limit(limitCount)
-    );
-    const querySnapshot = await getDocs(q);
-    const logs = [];
-    querySnapshot.forEach((doc) => {
-      logs.push({ id: doc.id, ...doc.data() });
-    });
-    return { success: true, logs };
+    const cacheKey = makeCacheKey('logs', String(limitCount));
+    return await fetchWithCache(cacheKey, async () => {
+      const q = query(
+        collection(db, 'logs'),
+        orderBy('timestamp', 'desc'),
+        limit(limitCount)
+      );
+      const querySnapshot = await getDocs(q);
+      const logs = [];
+      querySnapshot.forEach((doc) => {
+        logs.push({ id: doc.id, ...doc.data() });
+      });
+      return { success: true, logs };
+    }, 5000);
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -229,17 +261,20 @@ export const getDeviceLogs = async (limitCount = 50) => {
  */
 export const getAlerts = async (limitCount = 20) => {
   try {
-    const q = query(
-      collection(db, 'alerts'),
-      orderBy('timestamp', 'desc'),
-      limit(limitCount)
-    );
-    const querySnapshot = await getDocs(q);
-    const alerts = [];
-    querySnapshot.forEach((doc) => {
-      alerts.push({ id: doc.id, ...doc.data() });
-    });
-    return { success: true, alerts };
+    const cacheKey = makeCacheKey('alerts', String(limitCount));
+    return await fetchWithCache(cacheKey, async () => {
+      const q = query(
+        collection(db, 'alerts'),
+        orderBy('timestamp', 'desc'),
+        limit(limitCount)
+      );
+      const querySnapshot = await getDocs(q);
+      const alerts = [];
+      querySnapshot.forEach((doc) => {
+        alerts.push({ id: doc.id, ...doc.data() });
+      });
+      return { success: true, alerts };
+    }, 5000); // short TTL for alerts
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -538,18 +573,21 @@ export const createSafetyAlert = async (deviceId, alertType, data = {}) => {
  */
 export const getSafetyAlerts = async (deviceId, limitCount = 20) => {
   try {
-    const q = query(
-      collection(db, 'safety_alerts'),
-      where('deviceId', '==', deviceId),
-      orderBy('timestamp', 'desc'),
-      limit(limitCount)
-    );
-    const querySnapshot = await getDocs(q);
-    const alerts = [];
-    querySnapshot.forEach((doc) => {
-      alerts.push({ id: doc.id, ...doc.data() });
-    });
-    return { success: true, alerts };
+    const cacheKey = makeCacheKey('safetyAlerts', deviceId, String(limitCount));
+    return await fetchWithCache(cacheKey, async () => {
+      const q = query(
+        collection(db, 'safety_alerts'),
+        where('deviceId', '==', deviceId),
+        orderBy('timestamp', 'desc'),
+        limit(limitCount)
+      );
+      const querySnapshot = await getDocs(q);
+      const alerts = [];
+      querySnapshot.forEach((doc) => {
+        alerts.push({ id: doc.id, ...doc.data() });
+      });
+      return { success: true, alerts };
+    }, 5000); // short TTL
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -600,6 +638,12 @@ export const getAlertsByDevice = async (deviceId, limitCount = 200) => {
     console.error('Error in getAlertsByDevice:', error);
     return { success: false, error: error.message };
   }
+};
+
+// Cached device fetch
+export const getDeviceByIdCached = async (deviceId, ttl = 30000) => {
+  const cacheKey = makeCacheKey('device', deviceId);
+  return await fetchWithCache(cacheKey, async () => await getDeviceById(deviceId), ttl);
 };
 
 /**
@@ -705,14 +749,16 @@ export const getDevices = async () => {
   try {
     const user = getCurrentUser();
     if (!user) return { success: false, error: 'No user logged in' };
-    
-    const q = query(collection(db, 'devices'), orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
-    const devices = [];
-    querySnapshot.forEach((doc) => {
-      devices.push({ id: doc.id, ...doc.data() });
-    });
-    return { success: true, devices };
+    const cacheKey = makeCacheKey('devicesForUser', user.uid);
+    return await fetchWithCache(cacheKey, async () => {
+      const q = query(collection(db, 'devices'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      const devices = [];
+      querySnapshot.forEach((doc) => {
+        devices.push({ id: doc.id, ...doc.data() });
+      });
+      return { success: true, devices };
+    }, 30000);
   } catch (error) {
     console.error('Error fetching devices:', error);
     return { success: false, error: error.message, devices: [] };
@@ -896,7 +942,7 @@ export const getAdminData = async (adminId = null) => {
 /**
  * Get all devices for current admin
  */
-export const getAdminDevices = async () => {
+export const getAdminDevices = async (limitCount = null) => {
   try {
     const user = getCurrentUser();
     if (!user) return { success: false, error: 'No user logged in' };
@@ -907,23 +953,29 @@ export const getAdminDevices = async () => {
       return { success: false, error: 'Could not fetch admin data' };
     }
     
-    const deviceIds = adminResult.admin.device_ids || [];
-    
+
+    let deviceIds = adminResult.admin.device_ids || [];
+    if (limitCount && Array.isArray(deviceIds)) {
+      deviceIds = deviceIds.slice(0, limitCount);
+    }
+
     if (deviceIds.length === 0) {
       return { success: true, devices: [] };
     }
-    
-    // Fetch devices by IDs
-    const devices = [];
-    for (const deviceId of deviceIds) {
-      const deviceRef = doc(db, 'devices', deviceId);
-      const deviceDoc = await getDoc(deviceRef);
-      if (deviceDoc.exists()) {
-        devices.push({ id: deviceDoc.id, ...deviceDoc.data() });
-      }
-    }
-    
-    return { success: true, devices };
+
+    const cacheKey = makeCacheKey('adminDevices', user.uid, deviceIds.join(','));
+    return await fetchWithCache(cacheKey, async () => {
+      // Fetch devices in parallel to reduce latency
+      const devicePromises = deviceIds.map(async (deviceId) => {
+        const deviceRef = doc(db, 'devices', deviceId);
+        const deviceDoc = await getDoc(deviceRef);
+        if (deviceDoc.exists()) return { id: deviceDoc.id, ...deviceDoc.data() };
+        return null;
+      });
+      const resolved = await Promise.all(devicePromises);
+      const devices = resolved.filter(Boolean);
+      return { success: true, devices };
+    }, 30000);
   } catch (error) {
     return { success: false, error: error.message };
   }

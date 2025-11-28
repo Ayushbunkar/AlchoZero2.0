@@ -7,7 +7,6 @@ import {
   onAuthStateChange,
   loginUser,
   getAdminDevices,
-  getDeviceById,
   listenToMultipleDevices,
 } from '../firebaseConfig';
 import Sidebar from './Sidebar';
@@ -30,6 +29,7 @@ const DashboardHome = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let stopListeningOuter = null;
     const unsubscribe = onAuthStateChange(async (currentUser) => {
       setUser(currentUser);
       if (!currentUser) {
@@ -37,33 +37,24 @@ const DashboardHome = () => {
         return;
       }
       // Fetch admin's devices
-      const result = await getAdminDevices();
+      const result = await getAdminDevices(12); // limit initial dashboard devices for faster load
       const baseDevices = result.devices || [];
-
-      // Enrich devices with latest full document in case some fields are missing
-      const enriched = await Promise.all(baseDevices.map(async (d) => {
-        try {
-          const res = await getDeviceById(d.id);
-          if (res.success && res.device) {
-            return { ...d, ...res.device };
-          }
-        } catch (err) {
-          // ignore
-        }
-        return d;
-      }));
-
-      setDevices(enriched);
+      // Show only real devices (prefer devices with vehicleName, driverName, or a valid deviceId)
+      const realDevices = baseDevices.filter(d => d && (d.vehicleName || d.driverName || d.deviceId));
+      setDevices(realDevices);
       setLoading(false);
       // Listen to all devices' real-time data
       const deviceIds = (result.devices || []).map((d) => d.id);
       if (deviceIds.length > 0) {
-        listenToMultipleDevices(deviceIds, (data) => {
+        stopListeningOuter = listenToMultipleDevices(deviceIds, (data) => {
           setRealtimeData({ ...data });
         });
       }
     });
-    return () => unsubscribe && unsubscribe();
+    return () => {
+      if (typeof stopListeningOuter === 'function') stopListeningOuter();
+      if (typeof unsubscribe === 'function') unsubscribe();
+    };
   }, []);
 
   if (loading) {
@@ -230,10 +221,14 @@ const DashboardHome = () => {
                   )}
                   <div>
                     <h3 className="text-lg font-semibold text-white">
-                      {device.driverName || 'Unknown Driver'}
+                      {device.vehicleName || device.driverName || device.deviceId || 'Unknown Device'}
                     </h3>
-                    <p className="text-xs text-gray-400">{device.deviceId}</p>
-                    <p className="text-xs text-gray-500">{device.vehicleNumber}</p>
+                    {device.deviceId && (
+                      <p className="text-xs text-gray-400">{device.deviceId}</p>
+                    )}
+                    {device.vehicleNumber && (
+                      <p className="text-xs text-gray-500">{device.vehicleNumber}</p>
+                    )}
                   </div>
                 </div>
                 <div className={`mb-4 p-4 rounded-lg ${

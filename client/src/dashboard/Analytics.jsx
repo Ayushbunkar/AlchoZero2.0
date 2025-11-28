@@ -41,12 +41,12 @@ const Analytics = () => {
   }, [user, timeRange]);
 
   const fetchData = async () => {
-    const logsResult = await getDeviceLogs(500);
+    const logsResult = await getDeviceLogs(200); // reduce initial fetch size for speed
     if (logsResult.success) {
       setLogs(logsResult.logs);
     }
 
-    const alertsResult = await getAlerts(200);
+    const alertsResult = await getAlerts(100); // smaller sample for dashboard analytics
     if (alertsResult.success) {
       setAlerts(alertsResult.alerts);
     }

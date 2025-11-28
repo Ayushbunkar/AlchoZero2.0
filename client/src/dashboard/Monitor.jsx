@@ -59,41 +59,30 @@ const Monitor = () => {
 
   // Fetch admin devices
   useEffect(() => {
-    if (user) {
-      fetchDevices();
-    }
-  }, [user]);
-
-  const fetchDevices = async () => {
-    const result = await getAdminDevices();
-    if (result.success) {
+    let stopListening = null;
+    const run = async () => {
+      if (!user) return;
+      const result = await getAdminDevices(12); // fetch a small page for quick monitoring load
+      if (!result.success) return;
       const baseDevices = result.devices || [];
+      // Show only real devices (devices with vehicleName, driverName, or a valid deviceId)
+      const realDevices = baseDevices.filter(d => d && (d.vehicleName || d.driverName || d.deviceId));
+      setDevices(realDevices);
 
-      // Enrich device docs to ensure driverName/vehicleNumber are available
-      const enriched = await Promise.all(baseDevices.map(async (d) => {
-        try {
-          const res = await getDeviceById(d.id);
-          if (res.success && res.device) return { ...d, ...res.device };
-        } catch (err) {
-          // ignore
-        }
-        return d;
-      }));
-
-      setDevices(enriched);
-
-      // Listen to all devices in real-time
       const deviceIds = baseDevices.map(d => d.id);
       if (deviceIds.length > 0) {
-        const unsubscribe = listenToMultipleDevices(deviceIds, (data) => {
+        stopListening = listenToMultipleDevices(deviceIds, (data) => {
           setRealtimeData(data);
         });
-        
-        // Store unsubscribe function
-        return () => unsubscribe();
       }
-    }
-  };
+    };
+
+    run();
+
+    return () => {
+      if (typeof stopListening === 'function') stopListening();
+    };
+  }, [user]);
 
   // Simulate realtime updates - REMOVE THIS in production when hardware sends data
   useEffect(() => {
@@ -334,10 +323,10 @@ const Monitor = () => {
                     )}
                     <div>
                       <h3 className="text-lg font-semibold text-white">
-                        {device.driverName || 'Unknown Driver'}
+                        {device.vehicleName || device.driverName || device.deviceId || 'Unknown Device'}
                       </h3>
-                      <p className="text-xs text-gray-400">{device.deviceId}</p>
-                      <p className="text-xs text-gray-500">{device.vehicleNumber}</p>
+                      {device.deviceId && <p className="text-xs text-gray-400">{device.deviceId}</p>}
+                      {device.vehicleNumber && <p className="text-xs text-gray-500">{device.vehicleNumber}</p>}
                     </div>
                   </div>
                   <div className="flex flex-col items-end space-y-1">

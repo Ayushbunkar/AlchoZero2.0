@@ -35,6 +35,7 @@ const Devices = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [devices, setDevices] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(12);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -358,7 +359,7 @@ const Devices = () => {
           transition={{ delay: 0.6 }}
           className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {filteredDevices.map((device, index) => (
+          {filteredDevices.slice(0, visibleCount).map((device, index) => (
             <motion.div
               key={device.id}
               initial={{ opacity: 0, y: 20 }}
@@ -460,6 +461,17 @@ const Devices = () => {
             </motion.div>
           ))}
         </motion.div>
+
+        {filteredDevices.length > visibleCount && (
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={() => setVisibleCount((v) => v + 12)}
+              className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-lg"
+            >
+              Load More
+            </button>
+          </div>
+        )}
 
         {filteredDevices.length === 0 && (
           <motion.div
