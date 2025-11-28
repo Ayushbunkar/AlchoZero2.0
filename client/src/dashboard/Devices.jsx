@@ -40,19 +40,21 @@ const Devices = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingDevice, setEditingDevice] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [driverId, setDriverId] = useState('');
   const [newDevice, setNewDevice] = useState({
-    name: '',
+    // visible/editable identifiers
     deviceId: '',
-    location: '',
+    // requested persistent/system fields
+    adminId: '',
+    alertsId: '',
+    batteryLevel: 100,
+    currLocation: { lat: 0, lng: 0 },
+    deviceRegisterDate: '',
+    lastActive: '',
+    lastLocationUpdateTime: '',
+    logsId: '',
     status: 'active',
-    driverName: '',
-    driverAge: '',
-    driverPhoto: '',
-    licenseNo: '',
     vehicleName: '',
-    vehicleNumber: '',
-    contactNumber: ''
+    vehicleNo: ''
   });
 
   // Check authentication
@@ -78,16 +80,7 @@ const Devices = () => {
     }
   }, [user]);
 
-  // Generate driver ID when modal opens
-  useEffect(() => {
-    if (showAddModal && !driverId) {
-      const generateId = async () => {
-        const id = await generateDriverId();
-        setDriverId(id);
-      };
-      generateId();
-    }
-  }, [showAddModal]);
+  // (driverId generation removed — system IDs are created on save)
 
   const fetchDevices = async () => {
     // Fetch only devices belonging to current admin
@@ -132,39 +125,50 @@ const Devices = () => {
   };
 
   const handleAddDevice = async () => {
-    if (!newDevice.name || !newDevice.deviceId) return;
+    // auto-generate deviceId if not provided
+    const deviceId = newDevice.deviceId || await generateDriverId();
 
-    // Generate driver ID if driver name is provided
-    let generatedDriverId = driverId;
-    if (newDevice.driverName && !driverId) {
-      generatedDriverId = await generateDriverId();
-      setDriverId(generatedDriverId);
-    }
+    // generate system IDs for alerts/logs and timestamps
+    const alertsId = await generateDriverId();
+    const logsId = await generateDriverId();
+    const now = new Date().toISOString();
 
-    const result = await addDevice({
+    const payload = {
       ...newDevice,
-      driverId: generatedDriverId,
-      lastSeen: new Date().toISOString(),
-      batteryLevel: 100,
-      firmwareVersion: '1.0.0'
-    });
+      deviceId,
+      adminId: user?.uid || newDevice.adminId || '',
+      alertsId,
+      logsId,
+      batteryLevel: newDevice.batteryLevel ?? 100,
+      currLocation: newDevice.currLocation || { lat: 0, lng: 0 },
+      deviceRegisterDate: now,
+      lastActive: now,
+      lastLocationUpdateTime: now,
+      lastSeen: now,
+      firmwareVersion: '1.0.0',
+      vehicleName: newDevice.vehicleName || '',
+      vehicleNo: newDevice.vehicleNo || newDevice.vehicleNumber || ''
+    };
+
+    const result = await addDevice(payload);
 
     if (result.success) {
-      setDevices([...devices, result.device]);
+      // add normalized payload to UI list so fields are available immediately
+      setDevices([...devices, { ...result.device, ...payload }]);
       setShowAddModal(false);
-      setDriverId(''); // Reset driver ID
-      setNewDevice({ 
-        name: '', 
-        deviceId: '', 
-        location: '', 
+      setNewDevice({
+        deviceId: '',
+        adminId: '',
+        alertsId: '',
+        batteryLevel: 100,
+        currLocation: { lat: 0, lng: 0 },
+        deviceRegisterDate: '',
+        lastActive: '',
+        lastLocationUpdateTime: '',
+        logsId: '',
         status: 'active',
-        driverName: '',
-        driverAge: '',
-        driverPhoto: '',
-        licenseNo: '',
         vehicleName: '',
-        vehicleNumber: '',
-        contactNumber: ''
+        vehicleNo: ''
       });
     }
   };
@@ -189,9 +193,12 @@ const Devices = () => {
   };
 
   const filteredDevices = devices.filter(device => {
-    const matchesSearch = device.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         device.deviceId.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || device.status === filterStatus;
+    const nameLower = (device.vehicleName || '').toLowerCase();
+    const idLower = (device.deviceId || '').toLowerCase();
+    const vehicleNoLower = (device.vehicleNo || '').toLowerCase();
+    const term = (searchTerm || '').toLowerCase();
+    const matchesSearch = nameLower.includes(term) || idLower.includes(term) || vehicleNoLower.includes(term);
+    const matchesFilter = filterStatus === 'all' || (device.status || '') === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
@@ -361,22 +368,14 @@ const Devices = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * index }}
               className="glass-card p-6 hover:bg-white/10 transition-colors cursor-pointer group"
-              onClick={() => navigate(`/dashboard/driver/${device.id}`)}
+              onClick={() => navigate(`/dashboard/device/${device.id}`)}
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <div className="relative">
-                    {device.driverPhoto ? (
-                      <img
-                        src={device.driverPhoto}
-                        alt={device.driverName || 'Driver'}
-                        className="w-12 h-12 rounded-full object-cover border-2 border-cyan-500/30"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
-                        <User className="w-6 h-6 text-primary" />
-                      </div>
-                    )}
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                      <span className="text-white font-bold">{(device.vehicleName || '?')[0]}</span>
+                    </div>
                     <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-dark-bg ${
                       device.status === 'active' ? 'bg-green-500' : 
                       device.status === 'offline' ? 'bg-red-500' : 
@@ -385,7 +384,7 @@ const Devices = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-primary group-hover:text-cyan-400 transition-colors">
-                      {device.name}
+                      {device.vehicleName || device.deviceId}
                     </h3>
                     <p className="text-sm text-gray-400">{device.deviceId}</p>
                   </div>
@@ -397,29 +396,29 @@ const Devices = () => {
 
               <div className="space-y-3 mb-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Driver</span>
+                  <span className="text-sm text-gray-400">Vehicle</span>
                   <span className="text-sm font-medium text-primary">
-                    {device.driverName || 'Not assigned'}
+                    {device.vehicleName || 'Not assigned'}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">Status</span>
                   <span className={`text-sm font-medium ${getStatusColor(device.status)}`}>
-                    {device.status.charAt(0).toUpperCase() + device.status.slice(1)}
+                    {(device.status || '').charAt(0).toUpperCase() + (device.status || '').slice(1)}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Vehicle</span>
-                  <span className="text-sm text-primary">{device.vehicleNumber || 'N/A'}</span>
+                  <span className="text-sm text-gray-400">Vehicle No</span>
+                  <span className="text-sm text-primary">{device.vehicleNo || 'N/A'}</span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-400">Location</span>
                   <div className="flex items-center space-x-1">
                     <MapPin className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-primary">{device.location || 'Unknown'}</span>
+                    <span className="text-sm text-primary">{device.currLocation ? `${device.currLocation.lat}, ${device.currLocation.lng}` : 'Unknown'}</span>
                   </div>
                 </div>
 
@@ -435,7 +434,7 @@ const Devices = () => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate(`/dashboard/driver/${device.id}`);
+                    navigate(`/dashboard/device/${device.id}`);
                   }}
                   className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 rounded-lg transition-colors"
                 >
@@ -503,141 +502,8 @@ const Devices = () => {
             >
               <h3 className="text-xl font-bold text-white mb-6">Add New Device</h3>
               <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">Device Name</label>
-                  <input
-                    type="text"
-                    value={newDevice.name}
-                    onChange={(e) => setNewDevice({...newDevice, name: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                    placeholder="e.g., Car Alcohol Detector #1"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">Device ID</label>
-                  <input
-                    type="text"
-                    value={newDevice.deviceId}
-                    onChange={(e) => setNewDevice({...newDevice, deviceId: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                    placeholder="e.g., ALCH-001"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">Location</label>
-                  <input
-                    type="text"
-                    value={newDevice.location}
-                    onChange={(e) => setNewDevice({...newDevice, location: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                    placeholder="e.g., Parking Lot A"
-                  />
-                </div>
-                
-                <div className="border-t border-white/10 pt-4 mt-4">
-                  <h4 className="text-sm font-semibold text-white mb-3">Driver Information</h4>
-                  
-                  <div className="mb-4 p-3 bg-(--primary-blue)/10 border border-(--primary-blue)/30 rounded-lg">
-                    <label className="block text-xs font-medium text-gray-400 mb-1">Auto-Generated Driver ID</label>
-                    <div className="text-base font-mono text-(--primary-blue)">{driverId || 'Generating...'}</div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">Driver Name</label>
-                    <input
-                      type="text"
-                      value={newDevice.driverName}
-                      onChange={(e) => setNewDevice({...newDevice, driverName: e.target.value})}
-                      className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                      placeholder="e.g., John Doe"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">Driver Age</label>
-                  <input
-                    type="number"
-                    value={newDevice.driverAge}
-                    onChange={(e) => setNewDevice({...newDevice, driverAge: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                    placeholder="e.g., 35"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Driver Photo</label>
-                  
-                  {newDevice.driverPhoto && (
-                    <div className="mb-3 relative">
-                      <img 
-                        src={newDevice.driverPhoto} 
-                        alt="Driver" 
-                        className="w-32 h-32 object-cover rounded-lg border-2 border-(--primary-blue)/30"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setNewDevice({...newDevice, driverPhoto: ''})}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <XCircle className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <div className="flex space-x-2">
-                      <label className="flex-1 cursor-pointer">
-                        <div className="flex items-center justify-center space-x-2 px-4 py-2 bg-(--primary-blue)/20 hover:bg-(--primary-blue)/30 text-(--primary-blue) rounded-lg transition-colors border border-(--primary-blue)/50">
-                          <Upload className="w-4 h-4" />
-                          <span className="text-sm font-medium">
-                            {uploadingImage ? 'Uploading...' : 'Upload from Device'}
-                          </span>
-                        </div>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          disabled={uploadingImage}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
-                    
-                    <div className="text-center text-xs text-gray-500">OR</div>
-                    
-                    <input
-                      type="text"
-                      value={newDevice.driverPhoto}
-                      onChange={(e) => setNewDevice({...newDevice, driverPhoto: e.target.value})}
-                      className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                      placeholder="Paste image URL"
-                      disabled={uploadingImage}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">License Number</label>
-                  <input
-                    type="text"
-                    value={newDevice.licenseNo}
-                    onChange={(e) => setNewDevice({...newDevice, licenseNo: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                    placeholder="e.g., DL-1234567890"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">Contact Number</label>
-                  <input
-                    type="tel"
-                    value={newDevice.contactNumber}
-                    onChange={(e) => setNewDevice({...newDevice, contactNumber: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                    placeholder="e.g., +1234567890"
-                  />
-                </div>
+                {/* Device name removed; deviceId is auto-generated. */}
+                {/* Driver-related fields removed — only vehicle/system fields kept */}
 
                 <div className="border-t border-white/10 pt-4 mt-4">
                   <h4 className="text-sm font-semibold text-white mb-3">Vehicle Information</h4>
@@ -658,8 +524,8 @@ const Devices = () => {
                   <label className="block text-sm font-medium text-gray-400 mb-1">Vehicle Number</label>
                   <input
                     type="text"
-                    value={newDevice.vehicleNumber}
-                    onChange={(e) => setNewDevice({...newDevice, vehicleNumber: e.target.value})}
+                    value={newDevice.vehicleNo}
+                    onChange={(e) => setNewDevice({...newDevice, vehicleNo: e.target.value})}
                     className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
                     placeholder="e.g., ABC-1234"
                   />
@@ -697,24 +563,8 @@ const Devices = () => {
             >
               <h3 className="text-xl font-bold text-white mb-6">Edit Device</h3>
               <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">Device Name</label>
-                  <input
-                    type="text"
-                    value={editingDevice.name}
-                    onChange={(e) => setEditingDevice({...editingDevice, name: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">Location</label>
-                  <input
-                    type="text"
-                    value={editingDevice.location}
-                    onChange={(e) => setEditingDevice({...editingDevice, location: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                  />
-                </div>
+                {/* Device name removed from edit UI per new schema */}
+                {/* Location removed — system keeps currLocation */}
                 <div>
                   <label className="block text-sm font-medium text-gray-400 mb-1">Status</label>
                   <select
@@ -729,112 +579,7 @@ const Devices = () => {
                   </select>
                 </div>
 
-                <div className="border-t border-white/10 pt-4 mt-4">
-                  <h4 className="text-sm font-semibold text-white mb-3">Driver Information</h4>
-                  
-                  {editingDevice.driverId && (
-                    <div className="mb-4 p-3 bg-(--primary-blue)/10 border border-(--primary-blue)/30 rounded-lg">
-                      <label className="block text-xs font-medium text-gray-400 mb-1">Driver ID</label>
-                      <div className="text-base font-mono text-(--primary-blue)">{editingDevice.driverId}</div>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-1">Driver Name</label>
-                    <input
-                      type="text"
-                      value={editingDevice.driverName || ''}
-                      onChange={(e) => setEditingDevice({...editingDevice, driverName: e.target.value})}
-                      className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                      placeholder="e.g., John Doe"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">Driver Age</label>
-                  <input
-                    type="number"
-                    value={editingDevice.driverAge || ''}
-                    onChange={(e) => setEditingDevice({...editingDevice, driverAge: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                    placeholder="e.g., 35"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Driver Photo</label>
-                  
-                  {editingDevice.driverPhoto && (
-                    <div className="mb-3 relative">
-                      <img 
-                        src={editingDevice.driverPhoto} 
-                        alt="Driver" 
-                        className="w-32 h-32 object-cover rounded-lg border-2 border-(--primary-blue)/30"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setEditingDevice({...editingDevice, driverPhoto: ''})}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                      >
-                        <XCircle className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <div className="flex space-x-2">
-                      <label className="flex-1 cursor-pointer">
-                        <div className="flex items-center justify-center space-x-2 px-4 py-2 bg-(--primary-blue)/20 hover:bg-(--primary-blue)/30 text-(--primary-blue) rounded-lg transition-colors border border-(--primary-blue)/50">
-                          <Upload className="w-4 h-4" />
-                          <span className="text-sm font-medium">
-                            {uploadingImage ? 'Uploading...' : 'Upload from Device'}
-                          </span>
-                        </div>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          disabled={uploadingImage}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
-                    
-                    <div className="text-center text-xs text-gray-500">OR</div>
-                    
-                    <input
-                      type="text"
-                      value={editingDevice.driverPhoto || ''}
-                      onChange={(e) => setEditingDevice({...editingDevice, driverPhoto: e.target.value})}
-                      className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                      placeholder="Paste image URL"
-                      disabled={uploadingImage}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">License Number</label>
-                  <input
-                    type="text"
-                    value={editingDevice.licenseNo || ''}
-                    onChange={(e) => setEditingDevice({...editingDevice, licenseNo: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                    placeholder="e.g., DL-1234567890"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-1">Contact Number</label>
-                  <input
-                    type="tel"
-                    value={editingDevice.contactNumber || ''}
-                    onChange={(e) => setEditingDevice({...editingDevice, contactNumber: e.target.value})}
-                    className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
-                    placeholder="e.g., +1234567890"
-                  />
-                </div>
+                {/* Driver-related edit fields removed per new schema */}
 
                 <div className="border-t border-white/10 pt-4 mt-4">
                   <h4 className="text-sm font-semibold text-white mb-3">Vehicle Information</h4>
@@ -855,8 +600,8 @@ const Devices = () => {
                   <label className="block text-sm font-medium text-gray-400 mb-1">Vehicle Number</label>
                   <input
                     type="text"
-                    value={editingDevice.vehicleNumber || ''}
-                    onChange={(e) => setEditingDevice({...editingDevice, vehicleNumber: e.target.value})}
+                    value={editingDevice.vehicleNo || ''}
+                    onChange={(e) => setEditingDevice({...editingDevice, vehicleNo: e.target.value})}
                     className="w-full px-3 py-2 bg-dark-bg border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-(--primary-blue)"
                     placeholder="e.g., ABC-1234"
                   />

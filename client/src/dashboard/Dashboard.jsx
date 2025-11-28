@@ -17,7 +17,7 @@ const DriverMonitor = lazy(() => import('./DriverMonitor'));
 const Alerts = lazy(() => import('./Alerts'));
 const Analytics = lazy(() => import('./Analytics'));
 const Devices = lazy(() => import('./Devices'));
-const DriverProfile = lazy(() => import('./DriverProfile'));
+const DeviceDetails = lazy(() => import('./DeviceDetails'));
 const Security = lazy(() => import('./Security'));
 const Settings = lazy(() => import('./Settings'));
 
@@ -145,13 +145,22 @@ const DashboardHome = () => {
                     cx="50%"
                     cy="50%"
                     outerRadius={60}
-                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    // Hide slice labels for zero-percent slices to avoid overlap
+                    labelLine={false}
+                    label={({ name, percent }) => (percent > 0 ? `${name} (${(percent * 100).toFixed(0)}%)` : '')}
                   >
                     {pieData.map((entry, idx) => (
                       <Cell key={`cell-${idx}`} fill={pieColors[idx % pieColors.length]} />
                     ))}
                   </Pie>
-                  <Legend />
+                  <Legend
+                    layout="horizontal"
+                    align="center"
+                    verticalAlign="bottom"
+                    iconType="circle"
+                    iconSize={10}
+                    wrapperStyle={{ marginTop: 8 }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -434,7 +443,7 @@ const Dashboard = () => {
             <Route path="alerts" element={<Alerts />} />
             <Route path="analytics" element={<Analytics />} />
             <Route path="devices" element={<Devices />} />
-            <Route path="driver/:deviceId" element={<DriverProfile />} />
+            <Route path="device/:deviceId" element={<DeviceDetails />} />
             <Route path="security" element={<Security />} />
             <Route path="settings" element={<Settings />} />
           </Routes>
