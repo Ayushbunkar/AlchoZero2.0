@@ -7,6 +7,7 @@ import {
   onAuthStateChange,
   loginUser,
   getAdminDevices,
+  getDeviceById,
   listenToMultipleDevices,
 } from '../firebaseConfig';
 import Sidebar from './Sidebar';
@@ -37,7 +38,22 @@ const DashboardHome = () => {
       }
       // Fetch admin's devices
       const result = await getAdminDevices();
-      setDevices(result.devices || []);
+      const baseDevices = result.devices || [];
+
+      // Enrich devices with latest full document in case some fields are missing
+      const enriched = await Promise.all(baseDevices.map(async (d) => {
+        try {
+          const res = await getDeviceById(d.id);
+          if (res.success && res.device) {
+            return { ...d, ...res.device };
+          }
+        } catch (err) {
+          // ignore
+        }
+        return d;
+      }));
+
+      setDevices(enriched);
       setLoading(false);
       // Listen to all devices' real-time data
       const deviceIds = (result.devices || []).map((d) => d.id);

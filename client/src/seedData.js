@@ -1,6 +1,3 @@
-// Sample Data Seeder for Testing
-// Run this after logging into the dashboard to populate with test data
-
 import {
   addDevice,
   generateDriverId,
@@ -9,342 +6,250 @@ import {
   updateDeviceStatus
 } from './firebaseConfig';
 
-/**
- * Create sample devices with drivers
- */
+// Utility: try common shapes for returned ids
+const safeIdFromResult = (result) => {
+  if (!result) return null;
+  if (result.id) return result.id;
+  if (result.device && (result.device.id || result.device.deviceId)) return result.device.id || result.device.deviceId;
+  if (result.deviceId) return result.deviceId;
+  return null;
+};
+
 export const seedDevices = async () => {
   console.log('🌱 Seeding sample devices...');
-  
+
   const sampleDevices = [
     {
-      name: 'Car Alcohol Detector #1',
-      deviceId: 'ALCH-001',
-      driverName: 'John Smith',
-      driverAge: '35',
-      location: 'Downtown Area',
-      vehicleName: 'Toyota Camry',
-      vehicleNumber: 'ABC-1234',
-      contactNumber: '+1234567890',
-      licenseNo: 'DL-1234567890',
-      status: 'active'
+      adminId: 'jcjdvncknvidenvn',
+      batteryLevel: 90,
+      currLocation: { lat: 0, lng: 0 },
+      deviceRegisterDate: new Date('2025-11-26T06:58:57.000Z'),
+      lastActive: new Date('2025-11-03T05:52:42.000Z'),
+      lastLocationUpdateTime: new Date('2025-11-25T06:01:11.000Z'),
+      logsId: 'xsjxbnsjncjss',
+      status: 'active',
+      vehicleName: 'Testing Vehicle',
+      vehicleNo: 'MP07AA1234'
     },
     {
-      name: 'Truck Alcohol Detector #2',
-      deviceId: 'ALCH-002',
-      driverName: 'Sarah Johnson',
-      driverAge: '28',
-      location: 'Highway 101',
-      vehicleName: 'Ford F-150',
-      vehicleNumber: 'XYZ-5678',
-      contactNumber: '+1987654321',
-      licenseNo: 'DL-9876543210',
-      status: 'active'
-    },
-    {
-      name: 'Bus Alcohol Detector #3',
-      deviceId: 'ALCH-003',
-      driverName: 'Michael Chen',
-      driverAge: '42',
-      location: 'Bus Terminal',
-      vehicleName: 'Volvo Bus',
-      vehicleNumber: 'BUS-9012',
-      contactNumber: '+1122334455',
-      licenseNo: 'DL-5566778899',
-      status: 'active'
-    },
-    {
-      name: 'Taxi Alcohol Detector #4',
-      deviceId: 'ALCH-004',
-      driverName: 'Emily Davis',
-      driverAge: '31',
-      location: 'Airport',
-      vehicleName: 'Honda Accord',
-      vehicleNumber: 'TAXI-3456',
-      contactNumber: '+1555666777',
-      licenseNo: 'DL-3344556677',
-      status: 'maintenance'
-    },
-    {
-      name: 'Van Alcohol Detector #5',
-      deviceId: 'ALCH-005',
-      driverName: 'David Martinez',
-      driverAge: '39',
-      location: 'City Center',
-      vehicleName: 'Mercedes Sprinter',
-      vehicleNumber: 'VAN-7890',
-      contactNumber: '+1888999000',
-      licenseNo: 'DL-7788990011',
-      status: 'offline'
+      adminId: 'jcjdvncknvidenvn',
+      batteryLevel: 85,
+      currLocation: { lat: 0, lng: 0 },
+      deviceRegisterDate: new Date('2025-11-26T06:58:57.000Z'),
+      lastActive: new Date('2025-11-03T05:52:42.000Z'),
+      lastLocationUpdateTime: new Date('2025-11-25T06:01:11.000Z'),
+      
+      status: 'active',
+      vehicleName: 'Testing Vehicle B',
+      vehicleNo: 'MP07BB5678'
     }
   ];
 
-  const createdDevices = [];
-  
+  const created = [];
   for (const device of sampleDevices) {
     try {
       const driverId = await generateDriverId();
-      const result = await addDevice({
-        ...device,
-        driverId,
-        batteryLevel: Math.floor(Math.random() * 30) + 70, // 70-100%
-        lastSeen: new Date().toISOString(),
-        firmwareVersion: '1.0.0'
-      });
-      
-      if (result.success) {
-        console.log(`  ✅ Added: ${device.name}`);
-        createdDevices.push(result.device);
+      const result = await addDevice({ ...device, driverId });
+      const id = safeIdFromResult(result);
+      if (id) {
+        created.push({ id, ...device });
+        console.log(`  ✅ Added device ${id}`);
       } else {
-        console.log(`  ❌ Failed to add ${device.name}:`, result.error);
+        console.warn('  ⚠️ Device add returned no id:', result);
       }
-    } catch (error) {
-      console.error(`  ❌ Error adding ${device.name}:`, error);
+    } catch (err) {
+      console.error('  ❌ Error adding device:', err);
     }
   }
-  
-  console.log(`\n✅ Created ${createdDevices.length} devices`);
-  return createdDevices;
+
+  console.log(`\n✅ Created ${created.length} devices`);
+  return created;
 };
 
-/**
- * Create sample logs for devices
- */
-export const seedLogs = async (deviceIds = ['ALCH-001', 'ALCH-002', 'ALCH-003']) => {
+export const seedLogs = async (deviceIds = []) => {
+  if (!Array.isArray(deviceIds) || deviceIds.length === 0) {
+    console.warn('seedLogs: no deviceIds provided');
+    return [];
+  }
+
   console.log('🌱 Seeding sample logs...');
-  
-  const logsCreated = [];
-  
-  // Create 50 logs spread over the last 7 days
+  const created = [];
   for (let i = 0; i < 50; i++) {
     const deviceId = deviceIds[Math.floor(Math.random() * deviceIds.length)];
     const daysAgo = Math.floor(Math.random() * 7);
     const hoursAgo = Math.floor(Math.random() * 24);
-    
-    // Generate realistic BAC levels (most safe, some warnings, few alerts)
     let alcoholLevel;
     const rand = Math.random();
-    if (rand < 0.7) {
-      // 70% safe readings (0.00 - 0.10)
-      alcoholLevel = Math.random() * 0.10;
-    } else if (rand < 0.9) {
-      // 20% warning readings (0.10 - 0.30)
-      alcoholLevel = 0.10 + Math.random() * 0.20;
-    } else {
-      // 10% alert readings (0.30 - 0.50)
-      alcoholLevel = 0.30 + Math.random() * 0.20;
-    }
-    
+    if (rand < 0.7) alcoholLevel = Math.random() * 0.10;
+    else if (rand < 0.9) alcoholLevel = 0.10 + Math.random() * 0.20;
+    else alcoholLevel = 0.30 + Math.random() * 0.20;
+
     try {
-      const result = await saveDeviceLog(deviceId, {
+      const res = await saveDeviceLog(deviceId, {
         alcoholLevel: parseFloat(alcoholLevel.toFixed(3)),
         engine: alcoholLevel > 0.15 ? 'LOCKED' : 'ON',
         timestamp: Date.now() - (daysAgo * 24 * 60 * 60 * 1000) - (hoursAgo * 60 * 60 * 1000)
       });
-      
-      if (result.success) {
-        logsCreated.push(result.id);
-      }
-    } catch (error) {
-      console.error('  ❌ Error creating log:', error);
+      const id = safeIdFromResult(res);
+      if (id) created.push(id);
+    } catch (err) {
+      console.error('  ❌ Error creating log:', err);
     }
   }
-  
-  console.log(`✅ Created ${logsCreated.length} logs`);
-  return logsCreated;
+
+  console.log(`✅ Created ${created.length} logs`);
+  return created;
 };
 
-/**
- * Create sample alerts
- */
-export const seedAlerts = async (deviceIds = ['ALCH-001', 'ALCH-002', 'ALCH-003']) => {
+export const seedAlerts = async (deviceIds = []) => {
+  if (!Array.isArray(deviceIds) || deviceIds.length === 0) {
+    console.warn('seedAlerts: no deviceIds provided');
+    return [];
+  }
+
   console.log('🌱 Seeding sample alerts...');
-  
-  const alertsCreated = [];
-  
-  // Create 10 alerts over the last 7 days
+  const created = [];
   for (let i = 0; i < 10; i++) {
     const deviceId = deviceIds[Math.floor(Math.random() * deviceIds.length)];
-    const alcoholLevel = 0.30 + Math.random() * 0.20; // 0.30 - 0.50
-    
+    const alcoholLevel = 0.30 + Math.random() * 0.20;
     try {
-      const result = await triggerAlert(deviceId, parseFloat(alcoholLevel.toFixed(3)));
-      
-      if (result.success) {
+      const res = await triggerAlert(deviceId, parseFloat(alcoholLevel.toFixed(3)));
+      const id = safeIdFromResult(res);
+      if (id) {
+        created.push(id);
         console.log(`  ✅ Created alert for ${deviceId}`);
-        alertsCreated.push(result.id);
       }
-    } catch (error) {
-      console.error('  ❌ Error creating alert:', error);
+    } catch (err) {
+      console.error('  ❌ Error creating alert:', err);
     }
   }
-  
-  console.log(`✅ Created ${alertsCreated.length} alerts`);
-  return alertsCreated;
+
+  console.log(`✅ Created ${created.length} alerts`);
+  return created;
 };
 
-/**
- * Update realtime device status
- */
-export const seedRealtimeData = async (deviceIds = ['ALCH-001', 'ALCH-002', 'ALCH-003']) => {
+export const seedRealtimeData = async (deviceIds = []) => {
+  if (!Array.isArray(deviceIds) || deviceIds.length === 0) {
+    console.warn('seedRealtimeData: no deviceIds provided');
+    return;
+  }
+
   console.log('🌱 Seeding realtime device status...');
-  
   for (const deviceId of deviceIds) {
-    const alcoholLevel = Math.random() * 0.20; // 0.00 - 0.20
-    
+    const alcoholLevel = Math.random() * 0.20;
     try {
       await updateDeviceStatus(deviceId, {
         alcoholLevel: parseFloat(alcoholLevel.toFixed(3)),
         engine: alcoholLevel > 0.15 ? 'LOCKED' : 'ON',
         timestamp: Date.now()
       });
-      
       console.log(`  ✅ Updated realtime status for ${deviceId}`);
-    } catch (error) {
-      console.error(`  ❌ Error updating ${deviceId}:`, error);
+    } catch (err) {
+      console.error(`  ❌ Error updating ${deviceId}:`, err);
     }
   }
-  
   console.log('✅ Realtime data updated');
 };
 
-/**
- * Seed all sample data
- */
 export const seedAllData = async () => {
   console.log('🌱 Seeding all sample data...\n');
-  
   try {
-    // Step 1: Create devices
     const devices = await seedDevices();
-    const deviceIds = devices.map(d => d.deviceId);
-    
+    const deviceIds = devices.map((d) => d.id).filter(Boolean);
     if (deviceIds.length === 0) {
       console.log('❌ No devices created. Aborting.');
-      return;
+      return { success: false, devices: [] };
     }
-    
-    // Wait a bit for Firestore to sync
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Step 2: Create logs
+
+    // Give Firestore a moment to settle
+    await new Promise((r) => setTimeout(r, 1500));
+
     await seedLogs(deviceIds);
-    
-    // Wait a bit
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Step 3: Create alerts
+    await new Promise((r) => setTimeout(r, 800));
     await seedAlerts(deviceIds);
-    
-    // Wait a bit
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Step 4: Update realtime status
+    await new Promise((r) => setTimeout(r, 800));
     await seedRealtimeData(deviceIds);
-    
+
     console.log('\n✅ All sample data seeded successfully!');
     console.log('📊 Summary:');
-    console.log(`  - Devices: ${devices.length}`);
+    console.log(`  - Devices: ${deviceIds.length}`);
     console.log(`  - Device IDs: ${deviceIds.join(', ')}`);
     console.log('  - Logs: ~50 entries');
     console.log('  - Alerts: ~10 entries');
     console.log('  - Realtime data: Updated');
-    console.log('\n🔄 Refresh your dashboard to see the data!');
-    
-    return {
-      devices,
-      deviceIds,
-      success: true
-    };
-  } catch (error) {
-    console.error('❌ Error seeding data:', error);
-    return {
-      success: false,
-      error: error.message
-    };
+
+    return { success: true, devices, deviceIds };
+  } catch (err) {
+    console.error('❌ Error seeding data:', err);
+    return { success: false, error: err?.message || String(err) };
   }
 };
 
-/**
- * Quick seed (smaller dataset for quick testing)
- */
 export const quickSeed = async () => {
-  console.log('⚡ Quick seed (3 devices, 20 logs, 5 alerts)...\n');
-  
   try {
-    // Create 3 devices
     const sampleDevices = [
       {
-        name: 'Test Car #1',
-        deviceId: 'TEST-001',
-        driverName: 'Test Driver 1',
-        driverAge: '30',
-        location: 'Test Location',
-        vehicleName: 'Test Car',
-        vehicleNumber: 'TEST-001',
-        contactNumber: '+1234567890',
-        licenseNo: 'DL-TEST-001',
-        status: 'active'
+        adminId: 'jcjdvncknvidenvn',
+        batteryLevel: 95,
+        currLocation: { lat: 0, lng: 0 },
+        deviceRegisterDate: new Date(),
+        lastActive: new Date(),
+        lastLocationUpdateTime: new Date(),
+      
+        status: 'active',
+        vehicleName: 'Test Car 1',
+        vehicleNo: 'TEST-001'
       },
       {
-        name: 'Test Car #2',
-        deviceId: 'TEST-002',
-        driverName: 'Test Driver 2',
-        driverAge: '35',
-        location: 'Test Location',
-        vehicleName: 'Test Car',
-        vehicleNumber: 'TEST-002',
-        contactNumber: '+1234567891',
-        licenseNo: 'DL-TEST-002',
-        status: 'active'
-      },
-      {
-        name: 'Test Car #3',
-        deviceId: 'TEST-003',
-        driverName: 'Test Driver 3',
-        driverAge: '28',
-        location: 'Test Location',
-        vehicleName: 'Test Car',
-        vehicleNumber: 'TEST-003',
-        contactNumber: '+1234567892',
-        licenseNo: 'DL-TEST-003',
-        status: 'active'
+        adminId: 'jcjdvncknvidenvn',
+        batteryLevel: 88,
+        currLocation: { lat: 0, lng: 0 },
+        deviceRegisterDate: new Date(),
+        lastActive: new Date(),
+        lastLocationUpdateTime: new Date(),
+        
+        status: 'active',
+        vehicleName: 'Test Car 2',
+        vehicleNo: 'TEST-002'
       }
     ];
-    
+
     const devices = [];
     for (const device of sampleDevices) {
       const driverId = await generateDriverId();
-      const result = await addDevice({ ...device, driverId });
-      if (result.success) devices.push(result.device);
+      const res = await addDevice({ ...device, driverId });
+      const id = safeIdFromResult(res);
+      if (id) devices.push({ id, ...device });
     }
-    
-    const deviceIds = devices.map(d => d.deviceId);
-    
-    // Create 20 logs
+
+    const deviceIds = devices.map((d) => d.id).filter(Boolean);
+    if (deviceIds.length === 0) {
+      return { success: false, error: 'no devices created' };
+    }
+
     for (let i = 0; i < 20; i++) {
       const deviceId = deviceIds[i % deviceIds.length];
       const alcoholLevel = Math.random() * 0.30;
       await saveDeviceLog(deviceId, {
         alcoholLevel: parseFloat(alcoholLevel.toFixed(3)),
-        engine: alcoholLevel > 0.15 ? 'LOCKED' : 'ON'
+        engine: alcoholLevel > 0.15 ? 'LOCKED' : 'ON',
+        timestamp: Date.now()
       });
     }
-    
-    // Create 5 alerts
+
     for (let i = 0; i < 5; i++) {
       const deviceId = deviceIds[i % deviceIds.length];
       await triggerAlert(deviceId, 0.35);
     }
-    
+
     console.log('✅ Quick seed complete!');
     return { success: true, devices, deviceIds };
-  } catch (error) {
-    console.error('❌ Quick seed failed:', error);
-    return { success: false, error: error.message };
+  } catch (err) {
+    console.error('❌ Quick seed failed:', err);
+    return { success: false, error: err?.message || String(err) };
   }
 };
 
-// Export for browser console use
 if (typeof window !== 'undefined') {
   window.seedData = {
     seedDevices,
@@ -354,11 +259,11 @@ if (typeof window !== 'undefined') {
     seedAllData,
     quickSeed
   };
-  
+
   console.log('🌱 Data seeder loaded!');
   console.log('Usage:');
-  console.log('  window.seedData.quickSeed()       - Quick test data (3 devices)');
-  console.log('  window.seedData.seedAllData()     - Full sample data (5 devices)');
+  console.log('  window.seedData.quickSeed()       - Quick test data');
+  console.log('  window.seedData.seedAllData()     - Full sample data');
 }
 
 export default {
@@ -369,3 +274,4 @@ export default {
   seedAllData,
   quickSeed
 };
+

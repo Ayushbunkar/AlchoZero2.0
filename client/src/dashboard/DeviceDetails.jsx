@@ -21,7 +21,8 @@ import {
   Upload,
   Trash2
 } from 'lucide-react';
-import { getDeviceById, updateDevice } from '../firebaseConfig';
+import { getAlertsByDevice, getDeviceById, updateDevice } from '../firebaseConfig';
+import AlertsDrawer from '../components/AlertsDrawer';
 import { uploadToCloudinary } from '../cloudinaryConfig';
 
 const DeviceDetails = () => {
@@ -31,6 +32,9 @@ const DeviceDetails = () => {
   const [loading, setLoading] = useState(true);
   const [capturedImages, setCapturedImages] = useState([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [alerts, setAlerts] = useState([]);
+  const [showAllAlerts, setShowAllAlerts] = useState(false);
+  const [openAlertsDrawer, setOpenAlertsDrawer] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
   // Mock data for driving statistics (in real app, fetch from Firebase)
@@ -49,7 +53,22 @@ const DeviceDetails = () => {
 
   useEffect(() => {
     fetchDeviceDetails();
+    fetchAlerts();
   }, [deviceId]);
+
+  const fetchAlerts = async () => {
+    try {
+      const res = await getAlertsByDevice(deviceId, 200);
+      const arr = Array.isArray(res?.alerts) ? res.alerts : [];
+      // debug logs to trace runtime values
+      // eslint-disable-next-line no-console
+      console.log('[DeviceDetails] fetchAlerts -> found', arr.length, 'alerts for', deviceId, arr.slice(0, 5));
+      setAlerts(arr);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[DeviceDetails] Error fetching alerts for device:', err);
+    }
+  };
 
   const parseLocation = (loc) => {
     if (!loc) return null;
@@ -211,7 +230,9 @@ const DeviceDetails = () => {
                 }`} />
               </div>
               <h2 className="text-2xl font-bold text-white mb-1">{device.vehicleName || device.deviceId}</h2>
-              <p className="text-cyan-400 font-mono text-sm mb-2">{device.deviceId || 'N/A'}</p>
+              {device.deviceId ? (
+                <p className="text-cyan-400 font-mono text-sm mb-2">{device.deviceId}</p>
+              ) : null}
               <p className="text-gray-400 text-sm">Status: {(device.status || 'N/A').charAt(0).toUpperCase() + (device.status || '').slice(1)}</p>
             </div>
 
@@ -446,6 +467,53 @@ const DeviceDetails = () => {
             </div>
           </motion.div>
         )}
+
+        {/* Recent Alerts (Overview) */}
+        {activeTab === 'overview' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card p-6 col-span-full mt-4"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-white flex items-center">
+                <AlertTriangle className="w-6 h-6 mr-2 text-yellow-400" />
+                Recent Alerts
+                <span className="ml-2 text-sm text-gray-400">(Latest)</span>
+              </h3>
+              <button
+                onClick={() => { console.log('[DeviceDetails] Open Alerts Drawer clicked, alertsCount=', alerts.length); setOpenAlertsDrawer(true); }}
+                aria-disabled={alerts.length === 0}
+                className={`px-4 py-2 text-sm rounded-md shadow-sm transition-colors ${alerts.length === 0 ? 'bg-transparent border border-white/10 text-gray-300 hover:bg-white/5' : 'bg-cyan-600 text-white hover:bg-cyan-500'}`}
+              >
+                {`View All (${alerts.length})`}
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {alerts.length === 0 ? (
+                <div className="text-gray-400">No alerts for this device.</div>
+              ) : (
+                alerts.slice(0, 5).map((alert) => (
+                  <div key={alert.id || alert.timestamp} className={`flex items-start justify-between p-3 bg-dark-bg/30 rounded-lg`}>
+                    <div className="flex items-start gap-3">
+                      <div className={`w-3 h-3 rounded-full mt-1 ${alert.severity === 'critical' ? 'bg-red-500' : alert.severity === 'high' ? 'bg-orange-500' : alert.severity === 'medium' ? 'bg-yellow-400' : 'bg-blue-400'}`} />
+                      <div>
+                        <p className="text-white font-medium capitalize">{(alert.alertType || 'Alert').replace('_', ' ')}</p>
+                        <p className="text-sm text-gray-400">{alert.message || ''}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-400">{alert.timestamp ? new Date(alert.timestamp).toLocaleString() : ''}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        <AlertsDrawer open={openAlertsDrawer} onClose={() => setOpenAlertsDrawer(false)} alerts={alerts} title={`Alerts — ${device.vehicleName || device.deviceId}`} />
 
         {activeTab === 'statistics' && (
           <motion.div

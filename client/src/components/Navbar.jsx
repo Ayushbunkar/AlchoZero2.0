@@ -37,7 +37,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center space-x-2"
               >
-                <img src={logo} alt="AlcoZero Logo" className="h-8 w-8" />
+                <img src={logo} alt="AlcoZero Logo" className="h-18 w-18 md:h-18 md:w-18" />
                 <span className="text-(--primary-blue) text-2xl font-bold">AlcoZero</span>
               </motion.div>
             </Link>
@@ -58,7 +58,7 @@ const Navbar = () => {
               whileHover={{ scale: 1.05 }}
               className="flex items-center space-x-2"
             >
-              <img src={logo} alt="AlcoZero Logo" className="h-8 w-8" />
+              <img src={logo} alt="AlcoZero Logo" className="h-12 w-12 md:h-16 md:w-16" />
               <span className="text-(--primary-blue) text-2xl font-bold">AlcoZero</span>
             </motion.div>
           </Link>

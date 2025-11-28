@@ -24,6 +24,7 @@ import {
   onAuthStateChange,
   listenToDeviceMonitoring,
   getAdminDevices,
+  getDeviceById,
   listenToMultipleDevices,
   getSafetyAlerts,
   getDriverStatistics
@@ -66,10 +67,23 @@ const Monitor = () => {
   const fetchDevices = async () => {
     const result = await getAdminDevices();
     if (result.success) {
-      setDevices(result.devices);
-      
+      const baseDevices = result.devices || [];
+
+      // Enrich device docs to ensure driverName/vehicleNumber are available
+      const enriched = await Promise.all(baseDevices.map(async (d) => {
+        try {
+          const res = await getDeviceById(d.id);
+          if (res.success && res.device) return { ...d, ...res.device };
+        } catch (err) {
+          // ignore
+        }
+        return d;
+      }));
+
+      setDevices(enriched);
+
       // Listen to all devices in real-time
-      const deviceIds = result.devices.map(d => d.id);
+      const deviceIds = baseDevices.map(d => d.id);
       if (deviceIds.length > 0) {
         const unsubscribe = listenToMultipleDevices(deviceIds, (data) => {
           setRealtimeData(data);

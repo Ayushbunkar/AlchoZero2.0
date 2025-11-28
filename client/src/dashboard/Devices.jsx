@@ -128,17 +128,14 @@ const Devices = () => {
     // auto-generate deviceId if not provided
     const deviceId = newDevice.deviceId || await generateDriverId();
 
-    // generate system IDs for alerts/logs and timestamps
-    const alertsId = await generateDriverId();
-    const logsId = await generateDriverId();
+    // let backend generate random alerts/logs IDs (Firestore-style)
     const now = new Date().toISOString();
 
     const payload = {
       ...newDevice,
       deviceId,
       adminId: user?.uid || newDevice.adminId || '',
-      alertsId,
-      logsId,
+      // alertsId and logsId will be generated server-side if not provided
       batteryLevel: newDevice.batteryLevel ?? 100,
       currLocation: newDevice.currLocation || { lat: 0, lng: 0 },
       deviceRegisterDate: now,

@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, doc, setDoc, getDoc, updateDoc, deleteDoc, where, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, doc, setDoc, getDoc, updateDoc, deleteDoc, where, arrayUnion, arrayRemove, GeoPoint } from 'firebase/firestore';
 import { getDatabase, ref, onValue, set, push } from 'firebase/database';
 
 // 🔥 Firebase Configuration
@@ -556,6 +556,53 @@ export const getSafetyAlerts = async (deviceId, limitCount = 20) => {
 };
 
 /**
+ * Get all alerts for a given device by querying both `safety_alerts` and `alerts` collections.
+ * Returns merged, deduped, sorted alerts.
+ * @param {string} deviceId
+ * @param {number} limitCount
+ */
+export const getAlertsByDevice = async (deviceId, limitCount = 200) => {
+  try {
+    // Query safety_alerts for the device
+    const q1 = query(
+      collection(db, 'safety_alerts'),
+      where('deviceId', '==', deviceId),
+      orderBy('timestamp', 'desc'),
+      limit(limitCount)
+    );
+    const snap1 = await getDocs(q1);
+    const safetyAlerts = [];
+    snap1.forEach((doc) => safetyAlerts.push({ id: doc.id, ...doc.data() }));
+
+    // Query generic alerts collection for the device
+    const q2 = query(
+      collection(db, 'alerts'),
+      where('deviceId', '==', deviceId),
+      orderBy('timestamp', 'desc'),
+      limit(limitCount)
+    );
+    const snap2 = await getDocs(q2);
+    const genericAlerts = [];
+    snap2.forEach((doc) => genericAlerts.push({ id: doc.id, ...doc.data() }));
+
+    // Merge and dedupe by id/timestamp
+    const combined = [...safetyAlerts, ...genericAlerts];
+    const map = new Map();
+    for (const a of combined) {
+      const key = a.id || String(a.timestamp) || JSON.stringify(a);
+      if (!map.has(key)) map.set(key, a);
+    }
+    const alerts = Array.from(map.values());
+    alerts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+    return { success: true, alerts };
+  } catch (error) {
+    console.error('Error in getAlertsByDevice:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
  * Listen to all devices monitoring status for admin
  * @param {Array} deviceIds - Array of device IDs to monitor
  * @param {function} callback - Callback function
@@ -682,13 +729,42 @@ export const addDevice = async (deviceData) => {
     if (!user) return { success: false, error: 'No user logged in' };
     
     // Add device to devices collection
-    const docRef = await addDoc(collection(db, 'devices'), {
-      ...deviceData,
-      userId: user.uid,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      status: deviceData.status || 'active'
-    });
+    // Only store the allowed schema fields to the device document
+    const deviceDoc = {
+      adminId: deviceData.adminId || null,
+      // Generate random Firestore-like IDs for alertsId/logsId when not provided
+      alertsId: deviceData.alertsId || doc(collection(db, 'alerts')).id || null,
+      batteryLevel: typeof deviceData.batteryLevel === 'number' ? deviceData.batteryLevel : (deviceData.batteryLevel != null ? Number(deviceData.batteryLevel) : null),
+      // currLocation should be stored as a Firestore GeoPoint if lat/lng provided
+      currLocation: null,
+      deviceRegisterDate: deviceData.deviceRegisterDate || null,
+      lastActive: deviceData.lastActive || null,
+      lastLocationUpdateTime: deviceData.lastLocationUpdateTime || null,
+      logsId: deviceData.logsId || doc(collection(db, 'logs')).id || null,
+      status: deviceData.status || 'active',
+      vehicleName: deviceData.vehicleName || null,
+      vehicleNo: deviceData.vehicleNo || null
+    };
+
+    // Convert currLocation shapes to GeoPoint
+    if (deviceData.currLocation) {
+      const loc = deviceData.currLocation;
+      let lat, lng;
+      if (typeof loc.latitude === 'number' && typeof loc.longitude === 'number') {
+        lat = loc.latitude; lng = loc.longitude;
+      } else if (typeof loc.lat === 'number' && typeof loc.lng === 'number') {
+        lat = loc.lat; lng = loc.lng;
+      } else if (Array.isArray(loc) && loc.length >= 2) {
+        lat = loc[0]; lng = loc[1];
+      }
+      if (typeof lat === 'number' && typeof lng === 'number') {
+        deviceDoc.currLocation = new GeoPoint(lat, lng);
+      } else {
+        deviceDoc.currLocation = null;
+      }
+    }
+
+    const docRef = await addDoc(collection(db, 'devices'), deviceDoc);
     
     // Add device ID to admin's device_ids array
     try {
@@ -701,12 +777,9 @@ export const addDevice = async (deviceData) => {
       console.warn('Could not update admin device_ids:', adminError);
     }
     
-    const newDevice = { 
-      id: docRef.id, 
-      ...deviceData,
-      userId: user.uid,
-      createdAt: Date.now(),
-      updatedAt: Date.now()
+    const newDevice = {
+      id: docRef.id,
+      ...deviceDoc
     };
     
     return { success: true, device: newDevice };
@@ -724,10 +797,40 @@ export const addDevice = async (deviceData) => {
 export const updateDevice = async (deviceId, deviceData) => {
   try {
     const deviceRef = doc(db, 'devices', deviceId);
-    await updateDoc(deviceRef, {
-      ...deviceData,
-      updatedAt: Date.now()
-    });
+    // Only allow updating the whitelisted fields
+    const updatePayload = {
+      ...(deviceData.adminId !== undefined ? { adminId: deviceData.adminId } : {}),
+      ...(deviceData.alertsId !== undefined ? { alertsId: deviceData.alertsId } : {}),
+      ...(deviceData.batteryLevel !== undefined ? { batteryLevel: Number(deviceData.batteryLevel) } : {}),
+      ...(deviceData.currLocation !== undefined ? {} : {}),
+      ...(deviceData.deviceRegisterDate !== undefined ? { deviceRegisterDate: deviceData.deviceRegisterDate } : {}),
+      ...(deviceData.lastActive !== undefined ? { lastActive: deviceData.lastActive } : {}),
+      ...(deviceData.lastLocationUpdateTime !== undefined ? { lastLocationUpdateTime: deviceData.lastLocationUpdateTime } : {}),
+      ...(deviceData.logsId !== undefined ? { logsId: deviceData.logsId } : {}),
+      ...(deviceData.status !== undefined ? { status: deviceData.status } : {}),
+      ...(deviceData.vehicleName !== undefined ? { vehicleName: deviceData.vehicleName } : {}),
+      ...(deviceData.vehicleNo !== undefined ? { vehicleNo: deviceData.vehicleNo } : {})
+    };
+
+    // Handle currLocation conversion if provided
+    if (deviceData.currLocation !== undefined) {
+      const loc = deviceData.currLocation;
+      let lat, lng;
+      if (loc && typeof loc.latitude === 'number' && typeof loc.longitude === 'number') {
+        lat = loc.latitude; lng = loc.longitude;
+      } else if (loc && typeof loc.lat === 'number' && typeof loc.lng === 'number') {
+        lat = loc.lat; lng = loc.lng;
+      } else if (Array.isArray(loc) && loc.length >= 2) {
+        lat = loc[0]; lng = loc[1];
+      }
+      if (typeof lat === 'number' && typeof lng === 'number') {
+        updatePayload.currLocation = new GeoPoint(lat, lng);
+      } else {
+        updatePayload.currLocation = null;
+      }
+    }
+
+    await updateDoc(deviceRef, updatePayload);
     return { success: true };
   } catch (error) {
     return { success: false, error: error.message };
