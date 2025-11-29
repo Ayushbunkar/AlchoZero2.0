@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, User, AlertCircle, Loader2, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { signupUser } from '../firebaseConfig';
-
+//df
 const Signup = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
