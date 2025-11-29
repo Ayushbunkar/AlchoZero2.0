@@ -19,6 +19,8 @@ const FAQ = () => {
         <h1 className="section-title mb-6">FAQ</h1>
         <p className="text-gray-400 mb-6">Common questions and answers about AlcoZero.</p>
 
+        //hgf
+
         <div className="space-y-4">
           {faqs.map((f, i) => (
             <div key={i} className="glass-card p-4">
